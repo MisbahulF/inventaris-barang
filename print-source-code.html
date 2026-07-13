@@ -1682,7 +1682,7 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
      */
     function editBarang(id) {
       // Navigasi ke halaman edit dengan query parameter id
-      window.location.href = `/edit?id=${id}`;
+      window.location.href = `edit.html?id=${id}`;
     }
 
     /**
@@ -1812,7 +1812,7 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
   &lt;!-- HEADER --&gt;
   &lt;header class="bg-gradient-to-r from-primary to-accent shadow-lg"&gt;
     &lt;div class="max-w-3xl mx-auto px-4 py-5 flex items-center gap-3"&gt;
-      &lt;a href="/" class="text-white hover:text-indigo-200 transition text-xl" title="Kembali"&gt;←&lt;/a&gt;
+      &lt;a href="index.html" class="text-white hover:text-indigo-200 transition text-xl" title="Kembali"&gt;←&lt;/a&gt;
       &lt;div&gt;
         &lt;h1 class="text-white text-xl font-bold"&gt;✏️ Edit Data Barang&lt;/h1&gt;
         &lt;p class="text-indigo-100 text-sm"&gt;Perbarui informasi barang di bawah ini&lt;/p&gt;
@@ -1890,7 +1890,7 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
 
         &lt;!-- Tombol Aksi --&gt;
         &lt;div class="flex justify-between gap-3 pt-2"&gt;
-          &lt;a href="/"
+          &lt;a href="index.html"
             class="px-5 py-2 text-sm border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50 transition text-center"&gt;
             ← Batal
           &lt;/a&gt;
@@ -1906,7 +1906,7 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
       &lt;div id="error-state" class="hidden text-center py-8"&gt;
         &lt;p class="text-4xl mb-3"&gt;❌&lt;/p&gt;
         &lt;p id="error-msg" class="text-sm text-red-500"&gt;Barang tidak ditemukan.&lt;/p&gt;
-        &lt;a href="/" class="mt-4 inline-block text-sm text-primary underline"&gt;← Kembali ke halaman utama&lt;/a&gt;
+        &lt;a href="index.html" class="mt-4 inline-block text-sm text-primary underline"&gt;← Kembali ke halaman utama&lt;/a&gt;
       &lt;/div&gt;
 
     &lt;/div&gt;
@@ -2237,7 +2237,7 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
         if (result.success) {
           tampilkanAlert(`Barang "${result.data.namaBarang}" berhasil diperbarui! Mengalihkan...`, 'success');
           // Redirect ke halaman utama setelah 1.5 detik
-          setTimeout(() =&gt; { window.location.href = '/'; }, 1500);
+          setTimeout(() =&gt; { window.location.href = 'index.html'; }, 1500);
         } else {
           tampilkanAlert(result.message || 'Gagal memperbarui data.', 'error');
           document.getElementById('btn-label').textContent = 'Simpan Perubahan';
