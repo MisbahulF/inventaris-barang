@@ -1344,6 +1344,197 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
     // Konstanta URL base API backend
     const API_URL = '/api/barang';
 
+    // Deteksi jika berjalan secara statis (GitHub Pages atau file protokol)
+    const isStaticMode = window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:';
+
+    const delay = (ms) =&gt; new Promise(resolve =&gt; setTimeout(resolve, ms));
+
+    const localDB = {
+      getBarang() {
+        const raw = localStorage.getItem('inventaris_barang');
+        return raw ? JSON.parse(raw) : [];
+      },
+      saveBarang(data) {
+        localStorage.setItem('inventaris_barang', JSON.stringify(data));
+      },
+      hitungStatistik(data) {
+        let totalItem = 0, totalStok = 0, totalNilai = 0;
+        for (const b of data) {
+          totalItem += 1;
+          totalStok += Number(b.stok);
+          totalNilai += Number(b.stok) * Number(b.harga);
+        }
+        return { totalItem, totalStok, totalNilai };
+      },
+      bubbleSort(data, sortBy, sortOrder) {
+        const arr = [...data];
+        const n = arr.length;
+        for (let i = 0; i &lt; n - 1; i++) {
+          for (let j = 0; j &lt; n - i - 1; j++) {
+            let valA = arr[j][sortBy];
+            let valB = arr[j+1][sortBy];
+            if (typeof valA === 'string') {
+              valA = valA.toLowerCase();
+              valB = valB.toLowerCase();
+            }
+            let swap = sortOrder === 'asc' ? valA &gt; valB : valA &lt; valB;
+            if (swap) {
+              [arr[j], arr[j+1]] = [arr[j+1], arr[j]];
+            }
+          }
+        }
+        return arr;
+      }
+    };
+
+    async function customFetch(url, options = {}) {
+      if (!isStaticMode) {
+        return fetch(url, options);
+      }
+      await delay(200);
+      const method = (options.method || 'GET').toUpperCase();
+      const urlObj = new URL(url, window.location.origin);
+      const path = urlObj.pathname;
+      let list = localDB.getBarang();
+
+      if (path === '/api/barang' &amp;&amp; method === 'GET') {
+        const sortBy = urlObj.searchParams.get('sortBy') || 'namaBarang';
+        const sortOrder = urlObj.searchParams.get('sortOrder') || 'asc';
+        const sortedList = localDB.bubbleSort(list, sortBy, sortOrder);
+        const stats = localDB.hitungStatistik(list);
+        return {
+          ok: true,
+          status: 200,
+          json: async () =&gt; ({
+            success: true,
+            count: sortedList.length,
+            statistik: stats,
+            data: sortedList
+          })
+        };
+      }
+
+      if (path === '/api/barang' &amp;&amp; method === 'POST') {
+        const body = JSON.parse(options.body);
+        const duplikat = list.some(b =&gt; b.kodeBarang.toLowerCase() === body.kodeBarang.toLowerCase());
+        if (duplikat) {
+          return {
+            ok: false,
+            status: 409,
+            json: async () =&gt; ({
+              success: false,
+              message: `Kode barang '${body.kodeBarang}' sudah terdaftar.`
+            })
+          };
+        }
+        const baru = {
+          id: 'uuid-' + Math.random().toString(36).substr(2, 9),
+          kodeBarang: body.kodeBarang,
+          namaBarang: body.namaBarang,
+          kategori: body.kategori,
+          stok: Number(body.stok) || 0,
+          harga: Number(body.harga) || 0,
+          keterangan: body.keterangan || '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        list.push(baru);
+        localDB.saveBarang(list);
+        return {
+          ok: true,
+          status: 201,
+          json: async () =&gt; ({
+            success: true,
+            message: `Barang '${baru.namaBarang}' berhasil ditambahkan.`,
+            data: baru
+          })
+        };
+      }
+
+      if (path.startsWith('/api/barang/') &amp;&amp; method === 'GET') {
+        const id = path.split('/').pop();
+        const barang = list.find(b =&gt; b.id === id);
+        if (!barang) {
+          return {
+            ok: false,
+            status: 404,
+            json: async () =&gt; ({
+              success: false,
+              message: 'Barang tidak ditemukan.'
+            })
+          };
+        }
+        return {
+          ok: true,
+          status: 200,
+          json: async () =&gt; ({
+            success: true,
+            data: barang
+          })
+        };
+      }
+
+      if (path.startsWith('/api/barang/') &amp;&amp; method === 'PUT') {
+        const id = path.split('/').pop();
+        const body = JSON.parse(options.body);
+        const index = list.findIndex(b =&gt; b.id === id);
+        if (index === -1) {
+          return {
+            ok: false,
+            status: 404,
+            json: async () =&gt; ({
+              success: false,
+              message: 'Barang tidak ditemukan.'
+            })
+          };
+        }
+        list[index] = {
+          ...list[index],
+          namaBarang: body.namaBarang,
+          kategori: body.kategori,
+          stok: Number(body.stok) || 0,
+          harga: Number(body.harga) || 0,
+          keterangan: body.keterangan || '',
+          updatedAt: new Date().toISOString()
+        };
+        localDB.saveBarang(list);
+        return {
+          ok: true,
+          status: 200,
+          json: async () =&gt; ({
+            success: true,
+            data: list[index]
+          })
+        };
+      }
+
+      if (path.startsWith('/api/barang/') &amp;&amp; method === 'DELETE') {
+        const id = path.split('/').pop();
+        const index = list.findIndex(b =&gt; b.id === id);
+        if (index === -1) {
+          return {
+            ok: false,
+            status: 404,
+            json: async () =&gt; ({
+              success: false,
+              message: 'Barang tidak ditemukan.'
+            })
+          };
+        }
+        list.splice(index, 1);
+        localDB.saveBarang(list);
+        return {
+          ok: true,
+          status: 200,
+          json: async () =&gt; ({
+            success: true,
+            message: 'Barang berhasil dihapus.'
+          })
+        };
+      }
+      return fetch(url, options);
+    }
+
     /**
      * Deskripsi   : Prosedur untuk memformat angka ke format Rupiah.
      * @param {Number} angka
@@ -1403,7 +1594,7 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
 
       try {
         // Kirim request GET ke API dengan query parameter sorting
-        const response = await fetch(`${API_URL}?sortBy=${sortBy}&amp;sortOrder=${sortOrder}`);
+        const response = await customFetch(`${API_URL}?sortBy=${sortBy}&amp;sortOrder=${sortOrder}`);
         const result   = await response.json();
 
         // Sembunyikan loading
@@ -1507,7 +1698,7 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
       if (!konfirmasi) return; // Batalkan jika pengguna memilih "Cancel"
 
       try {
-        const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        const response = await customFetch(`${API_URL}/${id}`, { method: 'DELETE' });
         const result   = await response.json();
 
         if (result.success) {
@@ -1553,7 +1744,7 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
 
       try {
         // Kirim data ke API menggunakan Fetch POST
-        const response = await fetch(API_URL, {
+        const response = await customFetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ kodeBarang, namaBarang, kategori, stok, harga, keterangan }),
@@ -1737,6 +1928,197 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
 
     const API_URL = '/api/barang';
 
+    // Deteksi jika berjalan secara statis (GitHub Pages atau file protokol)
+    const isStaticMode = window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:';
+
+    const delay = (ms) =&gt; new Promise(resolve =&gt; setTimeout(resolve, ms));
+
+    const localDB = {
+      getBarang() {
+        const raw = localStorage.getItem('inventaris_barang');
+        return raw ? JSON.parse(raw) : [];
+      },
+      saveBarang(data) {
+        localStorage.setItem('inventaris_barang', JSON.stringify(data));
+      },
+      hitungStatistik(data) {
+        let totalItem = 0, totalStok = 0, totalNilai = 0;
+        for (const b of data) {
+          totalItem += 1;
+          totalStok += Number(b.stok);
+          totalNilai += Number(b.stok) * Number(b.harga);
+        }
+        return { totalItem, totalStok, totalNilai };
+      },
+      bubbleSort(data, sortBy, sortOrder) {
+        const arr = [...data];
+        const n = arr.length;
+        for (let i = 0; i &lt; n - 1; i++) {
+          for (let j = 0; j &lt; n - i - 1; j++) {
+            let valA = arr[j][sortBy];
+            let valB = arr[j+1][sortBy];
+            if (typeof valA === 'string') {
+              valA = valA.toLowerCase();
+              valB = valB.toLowerCase();
+            }
+            let swap = sortOrder === 'asc' ? valA &gt; valB : valA &lt; valB;
+            if (swap) {
+              [arr[j], arr[j+1]] = [arr[j+1], arr[j]];
+            }
+          }
+        }
+        return arr;
+      }
+    };
+
+    async function customFetch(url, options = {}) {
+      if (!isStaticMode) {
+        return fetch(url, options);
+      }
+      await delay(200);
+      const method = (options.method || 'GET').toUpperCase();
+      const urlObj = new URL(url, window.location.origin);
+      const path = urlObj.pathname;
+      let list = localDB.getBarang();
+
+      if (path === '/api/barang' &amp;&amp; method === 'GET') {
+        const sortBy = urlObj.searchParams.get('sortBy') || 'namaBarang';
+        const sortOrder = urlObj.searchParams.get('sortOrder') || 'asc';
+        const sortedList = localDB.bubbleSort(list, sortBy, sortOrder);
+        const stats = localDB.hitungStatistik(list);
+        return {
+          ok: true,
+          status: 200,
+          json: async () =&gt; ({
+            success: true,
+            count: sortedList.length,
+            statistik: stats,
+            data: sortedList
+          })
+        };
+      }
+
+      if (path === '/api/barang' &amp;&amp; method === 'POST') {
+        const body = JSON.parse(options.body);
+        const duplikat = list.some(b =&gt; b.kodeBarang.toLowerCase() === body.kodeBarang.toLowerCase());
+        if (duplikat) {
+          return {
+            ok: false,
+            status: 409,
+            json: async () =&gt; ({
+              success: false,
+              message: `Kode barang '${body.kodeBarang}' sudah terdaftar.`
+            })
+          };
+        }
+        const baru = {
+          id: 'uuid-' + Math.random().toString(36).substr(2, 9),
+          kodeBarang: body.kodeBarang,
+          namaBarang: body.namaBarang,
+          kategori: body.kategori,
+          stok: Number(body.stok) || 0,
+          harga: Number(body.harga) || 0,
+          keterangan: body.keterangan || '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        list.push(baru);
+        localDB.saveBarang(list);
+        return {
+          ok: true,
+          status: 201,
+          json: async () =&gt; ({
+            success: true,
+            message: `Barang '${baru.namaBarang}' berhasil ditambahkan.`,
+            data: baru
+          })
+        };
+      }
+
+      if (path.startsWith('/api/barang/') &amp;&amp; method === 'GET') {
+        const id = path.split('/').pop();
+        const barang = list.find(b =&gt; b.id === id);
+        if (!barang) {
+          return {
+            ok: false,
+            status: 404,
+            json: async () =&gt; ({
+              success: false,
+              message: 'Barang tidak ditemukan.'
+            })
+          };
+        }
+        return {
+          ok: true,
+          status: 200,
+          json: async () =&gt; ({
+            success: true,
+            data: barang
+          })
+        };
+      }
+
+      if (path.startsWith('/api/barang/') &amp;&amp; method === 'PUT') {
+        const id = path.split('/').pop();
+        const body = JSON.parse(options.body);
+        const index = list.findIndex(b =&gt; b.id === id);
+        if (index === -1) {
+          return {
+            ok: false,
+            status: 404,
+            json: async () =&gt; ({
+              success: false,
+              message: 'Barang tidak ditemukan.'
+            })
+          };
+        }
+        list[index] = {
+          ...list[index],
+          namaBarang: body.namaBarang,
+          kategori: body.kategori,
+          stok: Number(body.stok) || 0,
+          harga: Number(body.harga) || 0,
+          keterangan: body.keterangan || '',
+          updatedAt: new Date().toISOString()
+        };
+        localDB.saveBarang(list);
+        return {
+          ok: true,
+          status: 200,
+          json: async () =&gt; ({
+            success: true,
+            data: list[index]
+          })
+        };
+      }
+
+      if (path.startsWith('/api/barang/') &amp;&amp; method === 'DELETE') {
+        const id = path.split('/').pop();
+        const index = list.findIndex(b =&gt; b.id === id);
+        if (index === -1) {
+          return {
+            ok: false,
+            status: 404,
+            json: async () =&gt; ({
+              success: false,
+              message: 'Barang tidak ditemukan.'
+            })
+          };
+        }
+        list.splice(index, 1);
+        localDB.saveBarang(list);
+        return {
+          ok: true,
+          status: 200,
+          json: async () =&gt; ({
+            success: true,
+            message: 'Barang berhasil dihapus.'
+          })
+        };
+      }
+      return fetch(url, options);
+    }
+
     /**
      * Prosedur menampilkan alert di form edit.
      * @param {String} pesan
@@ -1779,7 +2161,7 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
 
       try {
         // Fetch data barang berdasarkan ID
-        const response = await fetch(`${API_URL}/${id}`);
+        const response = await customFetch(`${API_URL}/${id}`);
         const result   = await response.json();
 
         // Sembunyikan loading skeleton
@@ -1845,7 +2227,7 @@ module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, dele
 
       try {
         // Kirim PUT request ke endpoint API
-        const response = await fetch(`${API_URL}/${id}`, {
+        const response = await customFetch(`${API_URL}/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ namaBarang, kategori, stok, harga, keterangan }),
