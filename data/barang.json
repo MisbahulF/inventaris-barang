@@ -1,0 +1,57 @@
+[
+  {
+    "id": "16abab45-d999-44c7-925e-ef725c42e8b2",
+    "kodeBarang": "BG-001",
+    "namaBarang": "iphone 13",
+    "kategori": "elektronik",
+    "stok": 1,
+    "harga": 8000000,
+    "keterangan": "like new bh 78",
+    "createdAt": "2026-07-12T14:13:01.337Z",
+    "updatedAt": "2026-07-12T14:13:14.903Z"
+  },
+  {
+    "id": "432cbaa2-e910-4d82-950f-93cfc854bce7",
+    "kodeBarang": "BG-002",
+    "namaBarang": "laptop",
+    "kategori": "elektronik",
+    "stok": 5,
+    "harga": 10000000,
+    "keterangan": "baru",
+    "createdAt": "2026-07-12T14:14:34.969Z",
+    "updatedAt": "2026-07-12T14:14:34.969Z"
+  },
+  {
+    "id": "e2c3790e-6bf6-41ba-b32e-ed4e9999a9d4",
+    "kodeBarang": "BG-004",
+    "namaBarang": "pensil",
+    "kategori": "alat tulis",
+    "stok": 500,
+    "harga": 5000,
+    "keterangan": "baru semua",
+    "createdAt": "2026-07-12T14:17:11.934Z",
+    "updatedAt": "2026-07-12T14:17:11.934Z"
+  },
+  {
+    "id": "8d061f66-ef2d-43fb-8afa-fa842d07199b",
+    "kodeBarang": "APA-1213",
+    "namaBarang": "apa ya",
+    "kategori": "eletronik",
+    "stok": 1,
+    "harga": 4000,
+    "keterangan": "",
+    "createdAt": "2026-07-12T14:31:07.732Z",
+    "updatedAt": "2026-07-12T14:31:07.732Z"
+  },
+  {
+    "id": "77b3758f-09f1-447f-8e23-784d3b62ae0b",
+    "kodeBarang": "BG-005",
+    "namaBarang": "aa",
+    "kategori": "alat tulis",
+    "stok": 10000,
+    "harga": 500,
+    "keterangan": "",
+    "createdAt": "2026-07-13T14:18:08.657Z",
+    "updatedAt": "2026-07-13T14:18:08.657Z"
+  }
+]

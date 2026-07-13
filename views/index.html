@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<!--
+ * Deskripsi   : Halaman utama Sistem Manajemen Inventaris Barang.
+ *               Menampilkan form input barang, kontrol sorting, statistik ringkasan,
+ *               dan tabel daftar barang yang diambil dari REST API backend.
+ * Initial State: Halaman kosong, data belum dimuat dari server.
+ * Final State  : Data barang tampil di tabel, siap untuk operasi CRUD.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+-->
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sistem Manajemen Inventaris Barang - Proyek Portofolio Sertifikasi BNSP" />
+  <title>Inventaris Barang | BNSP Portfolio</title>
+
+  <!-- Tailwind CSS via CDN (Unit J.620100.019.02 — Pre-Existing Library) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#4f46e5', dark: '#3730a3', light: '#818cf8' },
+            accent:  { DEFAULT: '#06b6d4', dark: '#0e7490' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Animasi fade-in untuk baris tabel */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.3s ease forwards; }
+    /* Spinner loading */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { animation: spin 0.8s linear infinite; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen font-sans text-slate-800">
+
+  <!-- ===== HEADER ===== -->
+  <header class="bg-gradient-to-r from-primary to-accent shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-5 flex items-center gap-3">
+      <span class="text-3xl">📦</span>
+      <div>
+        <h1 class="text-white text-2xl font-bold tracking-tight">Sistem Manajemen Inventaris Barang</h1>
+        <p class="text-indigo-100 text-sm">Proyek Portofolio Sertifikasi BNSP · Misbahul Fadhillah · v1.0.0</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+    <!-- ===== STATISTIK CARD ===== -->
+    <section id="statistik-section" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-white rounded-2xl shadow p-5 flex items-center gap-4">
+        <div class="bg-indigo-100 p-3 rounded-xl text-2xl">🗂️</div>
+        <div>
+          <p class="text-xs text-slate-500 uppercase tracking-wide">Total Jenis Barang</p>
+          <p id="stat-item" class="text-3xl font-bold text-primary">–</p>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl shadow p-5 flex items-center gap-4">
+        <div class="bg-cyan-100 p-3 rounded-xl text-2xl">📊</div>
+        <div>
+          <p class="text-xs text-slate-500 uppercase tracking-wide">Total Stok</p>
+          <p id="stat-stok" class="text-3xl font-bold text-accent">–</p>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl shadow p-5 flex items-center gap-4">
+        <div class="bg-green-100 p-3 rounded-xl text-2xl">💰</div>
+        <div>
+          <p class="text-xs text-slate-500 uppercase tracking-wide">Total Nilai Inventaris</p>
+          <p id="stat-nilai" class="text-xl font-bold text-green-600">–</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FORM TAMBAH BARANG ===== -->
+    <section class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-lg font-semibold text-slate-700 mb-5 flex items-center gap-2">
+        <span>➕</span> Tambah Barang Baru
+      </h2>
+
+      <!-- Notifikasi alert -->
+      <div id="alert-box" class="hidden mb-4 p-3 rounded-lg text-sm font-medium"></div>
+
+      <form id="form-barang" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" novalidate>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1" for="kodeBarang">Kode Barang <span class="text-red-500">*</span></label>
+          <input id="kodeBarang" name="kodeBarang" type="text" placeholder="Cth: BRG-001"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary uppercase" required />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1" for="namaBarang">Nama Barang <span class="text-red-500">*</span></label>
+          <input id="namaBarang" name="namaBarang" type="text" placeholder="Nama lengkap barang"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" required />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1" for="kategori">Kategori <span class="text-red-500">*</span></label>
+          <input id="kategori" name="kategori" type="text" placeholder="Elektronik, Alat Tulis, dll."
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" required />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1" for="stok">Stok</label>
+          <input id="stok" name="stok" type="number" placeholder="0" min="0"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1" for="harga">Harga (Rp)</label>
+          <input id="harga" name="harga" type="number" placeholder="0" min="0"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1" for="keterangan">Keterangan</label>
+          <input id="keterangan" name="keterangan" type="text" placeholder="Catatan tambahan (opsional)"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+        </div>
+        <div class="sm:col-span-2 lg:col-span-3 flex justify-end gap-3 pt-2">
+          <button type="button" id="btn-reset" onclick="resetForm()"
+            class="px-5 py-2 text-sm border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50 transition">
+            Reset
+          </button>
+          <button type="submit" id="btn-submit"
+            class="px-6 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary-dark transition flex items-center gap-2">
+            <span id="btn-submit-icon">💾</span>
+            <span id="btn-submit-text">Simpan Barang</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== KONTROL SORTING & TABEL ===== -->
+    <section class="bg-white rounded-2xl shadow p-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+        <h2 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+          <span>📋</span> Daftar Inventaris
+        </h2>
+
+        <!-- Kontrol Sorting — Unit J.620100.017.02 -->
+        <div class="flex flex-wrap gap-2 items-center">
+          <label class="text-xs font-semibold text-slate-500">Urutkan:</label>
+          <select id="sortBy" onchange="loadBarang()"
+            class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+            <option value="namaBarang">Nama (A-Z)</option>
+            <option value="kodeBarang">Kode Barang</option>
+            <option value="stok">Stok</option>
+            <option value="harga">Harga</option>
+            <option value="kategori">Kategori</option>
+          </select>
+          <select id="sortOrder" onchange="loadBarang()"
+            class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+            <option value="asc">⬆ Naik</option>
+            <option value="desc">⬇ Turun</option>
+          </select>
+          <button onclick="loadBarang()"
+            class="px-3 py-1.5 bg-accent text-white text-sm rounded-lg hover:bg-accent-dark transition">
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading" class="flex justify-center items-center py-12 text-slate-400 gap-3">
+        <div class="spinner w-6 h-6 border-4 border-primary border-t-transparent rounded-full"></div>
+        <span class="text-sm">Memuat data...</span>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="hidden text-center py-12 text-slate-400">
+        <p class="text-4xl mb-3">📭</p>
+        <p class="text-sm">Belum ada data barang. Tambahkan barang pertama Anda!</p>
+      </div>
+
+      <!-- Tabel Data -->
+      <div id="table-wrapper" class="hidden overflow-x-auto rounded-xl border border-slate-200">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">No</th>
+              <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Kode</th>
+              <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Barang</th>
+              <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori</th>
+              <th class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Stok</th>
+              <th class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Harga</th>
+              <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Keterangan</th>
+              <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabel-body" class="bg-white divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center text-xs text-slate-400 py-6">
+    Sistem Manajemen Inventaris Barang &copy; 2026 · Misbahul Fadhillah · Sertifikasi BNSP
+  </footer>
+
+  <!-- ===== JAVASCRIPT — Vanilla JS + Fetch API ===== -->
+  <script>
+    /**
+     * Deskripsi   : Script utama frontend. Mengelola semua interaksi UI:
+     *               pengambilan data (GET), penambahan (POST), penghapusan (DELETE),
+     *               serta tampilan tabel. Menggunakan Fetch API untuk komunikasi
+     *               dengan backend REST API.
+     * Initial State: Halaman baru dimuat, DOM siap, belum ada data di tabel.
+     * Final State  : Data ditampilkan di tabel setelah dipanggil loadBarang().
+     * Author       : Misbahul Fadhillah
+     * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+     */
+
+    // Konstanta URL base API backend
+    const API_URL = '/api/barang';
+
+    /**
+     * Deskripsi   : Prosedur untuk memformat angka ke format Rupiah.
+     * @param {Number} angka
+     * @returns {String}
+     */
+    function formatRupiah(angka) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency', currency: 'IDR', minimumFractionDigits: 0
+      }).format(angka);
+    }
+
+    /**
+     * Deskripsi   : Prosedur menampilkan notifikasi alert di atas form.
+     * @param {String} pesan   - Teks pesan
+     * @param {String} tipe    - 'success' | 'error' | 'warning'
+     */
+    function tampilkanAlert(pesan, tipe) {
+      const box = document.getElementById('alert-box');
+      const kelas = {
+        success: 'bg-green-100 text-green-800 border border-green-300',
+        error:   'bg-red-100 text-red-800 border border-red-300',
+        warning: 'bg-yellow-100 text-yellow-800 border border-yellow-300',
+      };
+      box.className = `mb-4 p-3 rounded-lg text-sm font-medium ${kelas[tipe] || kelas.warning}`;
+      box.textContent = pesan;
+      box.classList.remove('hidden');
+      // Sembunyikan otomatis setelah 4 detik
+      setTimeout(() => box.classList.add('hidden'), 4000);
+    }
+
+    /**
+     * Deskripsi   : Prosedur mengembalikan semua field form ke kondisi awal (kosong).
+     * Initial State: Form berisi data.
+     * Final State  : Semua field form kosong.
+     */
+    function resetForm() {
+      document.getElementById('form-barang').reset();
+      document.getElementById('alert-box').classList.add('hidden');
+    }
+
+    /**
+     * Deskripsi   : Fungsi async untuk mengambil data dari API dan menampilkan di tabel.
+     *               Membaca nilai sortBy & sortOrder dari select element.
+     *               Mengimplementasikan percabangan untuk state loading/empty/data.
+     * Initial State: Tabel kosong atau berisi data lama.
+     * Final State  : Tabel terisi data terbaru sesuai urutan yang dipilih.
+     */
+    async function loadBarang() {
+      // Ambil nilai parameter sorting dari DOM
+      const sortBy    = document.getElementById('sortBy').value;
+      const sortOrder = document.getElementById('sortOrder').value;
+
+      // Tampilkan state loading, sembunyikan tabel dan empty state
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('table-wrapper').classList.add('hidden');
+      document.getElementById('empty-state').classList.add('hidden');
+
+      try {
+        // Kirim request GET ke API dengan query parameter sorting
+        const response = await fetch(`${API_URL}?sortBy=${sortBy}&sortOrder=${sortOrder}`);
+        const result   = await response.json();
+
+        // Sembunyikan loading
+        document.getElementById('loading').classList.add('hidden');
+
+        // Percabangan: jika request gagal
+        if (!result.success) {
+          tampilkanAlert(result.message || 'Gagal memuat data.', 'error');
+          return;
+        }
+
+        // Update statistik card
+        document.getElementById('stat-item').textContent  = result.count;
+        document.getElementById('stat-stok').textContent  = result.statistik.totalStok;
+        document.getElementById('stat-nilai').textContent = formatRupiah(result.statistik.totalNilai);
+
+        const data = result.data;
+
+        // Percabangan: tampilkan empty state jika tidak ada data
+        if (!data || data.length === 0) {
+          document.getElementById('empty-state').classList.remove('hidden');
+          return;
+        }
+
+        // Tampilkan tabel dengan data yang diterima
+        document.getElementById('table-wrapper').classList.remove('hidden');
+        const tbody = document.getElementById('tabel-body');
+        tbody.innerHTML = ''; // Kosongkan baris lama
+
+        // Iterasi array data menggunakan for loop (Unit J.620100.017.02)
+        for (let i = 0; i < data.length; i++) {
+          const b   = data[i];
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-slate-50 transition fade-in';
+
+          // Logika warna badge stok berdasarkan kondisi stok
+          let stokBadge = '';
+          if (b.stok === 0) {
+            stokBadge = `<span class="px-2 py-0.5 rounded-full text-xs bg-red-100 text-red-700 font-semibold">${b.stok} (Habis)</span>`;
+          } else if (b.stok < 10) {
+            stokBadge = `<span class="px-2 py-0.5 rounded-full text-xs bg-yellow-100 text-yellow-700 font-semibold">${b.stok} (Rendah)</span>`;
+          } else {
+            stokBadge = `<span class="px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700 font-semibold">${b.stok}</span>`;
+          }
+
+          row.innerHTML = `
+            <td class="px-4 py-3 text-slate-400">${i + 1}</td>
+            <td class="px-4 py-3 font-mono font-semibold text-primary text-xs">${b.kodeBarang}</td>
+            <td class="px-4 py-3 font-medium">${b.namaBarang}</td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-0.5 rounded-full text-xs bg-indigo-50 text-indigo-700">${b.kategori}</span>
+            </td>
+            <td class="px-4 py-3 text-right">${stokBadge}</td>
+            <td class="px-4 py-3 text-right font-medium">${formatRupiah(b.harga)}</td>
+            <td class="px-4 py-3 text-slate-500 text-xs">${b.keterangan || '–'}</td>
+            <td class="px-4 py-3 text-center">
+              <div class="flex justify-center gap-2">
+                <button onclick="editBarang('${b.id}')"
+                  class="px-3 py-1 bg-amber-400 hover:bg-amber-500 text-white text-xs rounded-lg transition font-semibold">
+                  ✏️ Edit
+                </button>
+                <button onclick="hapusBarang('${b.id}', '${b.namaBarang.replace(/'/g, "\\'")}')"
+                  class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition font-semibold">
+                  🗑️ Hapus
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(row);
+        }
+
+      } catch (err) {
+        // Tangani error jaringan (server tidak berjalan, dll.)
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('empty-state').classList.remove('hidden');
+        document.getElementById('empty-state').innerHTML =
+          '<p class="text-4xl mb-3">⚠️</p><p class="text-sm text-red-400">Tidak dapat terhubung ke server. Pastikan backend berjalan di port 5000.</p>';
+        console.error('[Client] Error loadBarang:', err);
+      }
+    }
+
+    /**
+     * Deskripsi   : Prosedur navigasi ke halaman edit.html dengan membawa ID barang di URL.
+     * @param {String} id - MongoDB ObjectId barang yang akan diedit
+     */
+    function editBarang(id) {
+      // Navigasi ke halaman edit dengan query parameter id
+      window.location.href = `/edit?id=${id}`;
+    }
+
+    /**
+     * Deskripsi   : Fungsi async untuk menghapus barang setelah konfirmasi pengguna.
+     * Initial State: Barang masih ada di database.
+     * Final State  : Barang terhapus dari database, tabel di-refresh.
+     * @param {String} id         - MongoDB ObjectId
+     * @param {String} namaBarang - Nama barang untuk konfirmasi dialog
+     */
+    async function hapusBarang(id, namaBarang) {
+      // Tampilkan dialog konfirmasi — mencegah penghapusan tidak sengaja
+      const konfirmasi = confirm(`Yakin ingin menghapus barang "${namaBarang}"?\nTindakan ini tidak dapat dibatalkan.`);
+      if (!konfirmasi) return; // Batalkan jika pengguna memilih "Cancel"
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        const result   = await response.json();
+
+        if (result.success) {
+          tampilkanAlert(`Barang "${namaBarang}" berhasil dihapus.`, 'success');
+          loadBarang(); // Refresh tabel setelah hapus
+        } else {
+          tampilkanAlert(result.message || 'Gagal menghapus barang.', 'error');
+        }
+      } catch (err) {
+        tampilkanAlert('Error jaringan. Pastikan server berjalan.', 'error');
+        console.error('[Client] Error hapusBarang:', err);
+      }
+    }
+
+    /**
+     * Deskripsi   : Event handler untuk submit form penambahan barang.
+     *               Membaca input dari form (interface) dan mengirim ke API (penyimpanan).
+     *               Implementasi unit J.620100.017.02: baca-tulis input ke penyimpanan.
+     */
+    document.getElementById('form-barang').addEventListener('submit', async function (e) {
+      e.preventDefault(); // Mencegah reload halaman
+
+      // Ambil nilai dari setiap field form
+      const kodeBarang  = document.getElementById('kodeBarang').value.trim();
+      const namaBarang  = document.getElementById('namaBarang').value.trim();
+      const kategori    = document.getElementById('kategori').value.trim();
+      const stok        = parseInt(document.getElementById('stok').value) || 0;
+      const harga       = parseInt(document.getElementById('harga').value) || 0;
+      const keterangan  = document.getElementById('keterangan').value.trim();
+
+      // Validasi sisi client — percabangan if-else
+      if (!kodeBarang || !namaBarang || !kategori) {
+        tampilkanAlert('Field Kode Barang, Nama Barang, dan Kategori wajib diisi!', 'warning');
+        return;
+      }
+
+      // Tampilkan loading pada tombol submit
+      const btnText = document.getElementById('btn-submit-text');
+      const btnIcon = document.getElementById('btn-submit-icon');
+      btnText.textContent = 'Menyimpan...';
+      btnIcon.textContent = '⏳';
+      document.getElementById('btn-submit').disabled = true;
+
+      try {
+        // Kirim data ke API menggunakan Fetch POST
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kodeBarang, namaBarang, kategori, stok, harga, keterangan }),
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          tampilkanAlert(`Barang "${result.data.namaBarang}" berhasil ditambahkan!`, 'success');
+          resetForm();   // Kosongkan form
+          loadBarang();  // Refresh tabel
+        } else {
+          tampilkanAlert(result.message || 'Gagal menyimpan barang.', 'error');
+        }
+      } catch (err) {
+        tampilkanAlert('Error jaringan. Pastikan server berjalan di port 5000.', 'error');
+        console.error('[Client] Error createBarang:', err);
+      } finally {
+        // Kembalikan tombol ke kondisi normal
+        btnText.textContent = 'Simpan Barang';
+        btnIcon.textContent = '💾';
+        document.getElementById('btn-submit').disabled = false;
+      }
+    });
+
+    // Jalankan loadBarang saat DOM selesai dimuat
+    document.addEventListener('DOMContentLoaded', loadBarang);
+  </script>
+</body>
+</html>

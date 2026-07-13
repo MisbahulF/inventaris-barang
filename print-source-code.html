@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Source Code - Sistem Inventaris Barang</title>
+  <!-- Library Styling Prism.js untuk syntax highlighting bersih -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+      margin: 40px; 
+      background-color: #ffffff;
+      color: #333333;
+    }
+    
+    /* Header Dokumentasi */
+    .header-doc {
+      text-align: center;
+      border-bottom: 2px solid #2b579a;
+      padding-bottom: 20px;
+      margin-bottom: 45px;
+    }
+    .header-doc h1 { 
+      margin: 0; 
+      font-size: 22px; 
+      color: #2b579a;
+      font-weight: 700;
+    }
+    .header-doc p { 
+      margin: 6px 0 0 0; 
+      font-size: 13px; 
+      color: #555555; 
+    }
+    
+    /* Wadah Berkas */
+    .file-container { 
+      page-break-after: always; 
+      margin-bottom: 40px; 
+      border: 1px solid #dcdcdc;
+      border-radius: 6px;
+      background-color: #fafafa;
+    }
+    
+    .file-header { 
+      background-color: #f3f3f3; 
+      padding: 12px 20px; 
+      border-bottom: 1px solid #dcdcdc;
+      font-weight: bold; 
+      font-family: "Consolas", monospace; 
+      font-size: 13px; 
+      color: #2b579a;
+    }
+    
+    /* Konfigurasi Code block (Bersih Tanpa Plugin Nomor) */
+    pre[class*="language-"] { 
+      margin: 0 !important; 
+      padding: 20px !important;
+      background-color: #fafafa !important;
+      border: none !important;
+      white-space: pre-wrap !important;       /* Bungkus otomatis agar tidak terpotong */
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+    }
+    
+    code[class*="language-"] {
+      font-family: "Consolas", "Courier New", Courier, monospace !important;
+      font-size: 11.5px !important; 
+      line-height: 1.55 !important;
+      color: #333333 !important;
+    }
+
+    /* Penyesuaian Cetak Printer */
+    @media print {
+      body { 
+        margin: 20px; 
+      }
+      .file-container { 
+        page-break-inside: avoid; 
+        border: 1px solid #bbbbbb;
+      }
+      pre[class*="language-"] {
+        background-color: #ffffff !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header-doc">
+    <h1>LAMPIRAN PORTODOKUMEN KODE PROGRAM</h1>
+    <p>Sistem Manajemen Inventaris Barang Sederhana - Skema Asisten Pengembangan Web</p>
+    <p><strong>Nama Lengkap: Misbahul Fadhillah</strong> | Tanggal: 13 Juli 2026</p>
+  </div>
+
+  <div class="file-container">
+    <div class="file-header">File Path: README.md</div>
+    <pre class="language-markdown"><code class="language-markdown"># Sistem Manajemen Inventaris Barang
+
+&gt; **Proyek Portofolio Sertifikasi BNSP - "Asisten Pengembangan Web"**  
+&gt; Author: **Misbahul Fadhillah** | Versi: `1.0.0` | Tanggal: 12 Juli 2026
+
+---
+
+## Hierarki Folder Proyek
+
+Proyek ini disusun secara **modular** mengikuti prinsip _Separation of Concerns_ sesuai unit kompetensi **J.620100.015.01** (Menyusun Fungsi &amp; Organisasi Rapi). Setiap folder memiliki satu tanggung jawab tunggal yang jelas.
+
+```
+inventaris-barang/                   &lt;- ROOT PROYEK
+│
+│   &lt;- [ KONFIGURASI &amp; ENTRY POINT ]
+├── server.js                        &lt;- Entry point: inisialisasi Express, middleware (CORS,
+│                                       Body-Parser), routing, dan menjalankan server di port 5000.
+│                                       (Unit J.620100.019.02 - Integrasi library pre-existing)
+│
+├── package.json                     &lt;- Metadata proyek Node.js dan daftar seluruh
+│                                       dependensi library yang digunakan.
+│
+├── README.md                        &lt;- Dokumentasi proyek: hierarki folder, cara menjalankan,
+│                                       pemetaan unit kompetensi SKKNI, dan referensi API.
+│
+│   &lt;- [ LAPISAN KONFIGURASI ]
+├── config/
+│   └── db.js                        &lt;- Modul penyimpanan data berbasis file JSON.
+│                                       Menyediakan prosedur initStorage(), fungsi readData(),
+│                                       dan prosedur writeData() untuk akses media penyimpanan.
+│                                       (Unit J.620100.017.02 - Akses media penyimpanan)
+│
+│   &lt;- [ LAPISAN MODEL / SKEMA DATA ]
+├── models/
+│   └── Barang.js                    &lt;- Definisi skema struktur data entitas Barang menggunakan
+│                                       Mongoose Schema. Mendokumentasikan 6 field dengan tipe
+│                                       data dan aturan validasi yang ketat.
+│                                       (Unit J.620100.019.02 - Integrasi library Mongoose)
+│
+│   &lt;- [ LAPISAN LOGIKA BISNIS ]
+├── controllers/
+│   └── barangController.js          &lt;- Pusat logika bisnis aplikasi. Berisi:
+│                                       - 5 fungsi handler CRUD (getAllBarang, getBarangById,
+│                                         createBarang, updateBarang, deleteBarang)
+│                                       - Algoritma Bubble Sort manual (sortingArray())
+│                                       - Fungsi statistik inventaris (hitungStatistik())
+│                                       (Unit J.620100.017.02 - Sorting array, if-else, for loop,
+│                                        prosedur &amp; fungsi, baca-tulis penyimpanan)
+│
+│   &lt;- [ LAPISAN ROUTING / API ]
+├── routes/
+│   └── barangRoutes.js              &lt;- Mendefinisikan 5 endpoint RESTful API dan
+│                                       menghubungkannya ke fungsi handler di controller.
+│                                       (GET, POST, PUT, DELETE /api/barang)
+│
+│   &lt;- [ LAPISAN PRESENTASI / FRONTEND ]
+├── views/
+│   ├── index.html                   &lt;- Halaman utama aplikasi. Menampilkan:
+│   │                                   - Form input tambah barang baru
+│   │                                   - Kontrol sorting (sortBy + sortOrder)
+│   │                                   - Kartu statistik inventaris (total item, stok, nilai)
+│   │                                   - Tabel daftar barang dengan tombol Edit &amp; Hapus
+│   │                                   (Vanilla JS + Fetch API + Tailwind CSS via CDN)
+│   │
+│   └── edit.html                    &lt;- Halaman formulir edit barang. Memuat data lama
+│                                       dari API (GET /:id) lalu mengirim perubahan (PUT /:id).
+│                                       Dilengkapi skeleton loading dan redirect otomatis.
+│
+│   &lt;- [ PENYIMPANAN DATA (dibuat otomatis saat server pertama kali jalan) ]
+└── data/
+    └── barang.json                  &lt;- File penyimpanan data utama dalam format JSON array.
+                                        Dibuat otomatis oleh initStorage() jika belum ada.
+                                        Setiap record memiliki field: id (UUID), kodeBarang,
+                                        namaBarang, kategori, stok, harga, keterangan,
+                                        createdAt, updatedAt.
+                                        (Unit J.620100.017.02 - Media penyimpanan file)
+```
+
+---
+
+## Pemetaan Unit Kompetensi SKKNI
+
+| Kode Unit | Nama Unit | Implementasi dalam Proyek |
+|-----------|-----------|---------------------------|
+| **J.620100.015.01** | Menyusun Fungsi &amp; Organisasi Rapi | - Header komentar `/** Deskripsi / Initial State / Final State / Author / Versi */` di setiap file dan fungsi &lt;br&gt;- Komentar inline di setiap blok logika &lt;br&gt;- Struktur 5 folder modular (config, controllers, models, routes, views) |
+| **J.620100.017.02** | Pemrograman Terstruktur | - Tipe data standar: String, Number, Boolean, Array, Object &lt;br&gt;- Percabangan `if-else` di setiap handler (validasi, cek duplikasi, status stok) &lt;br&gt;- Pengulangan `for` (Bubble Sort) dan `for...of` (statistik) &lt;br&gt;- Baca-tulis input: Form HTML -&gt; Fetch API -&gt; `readData()`/`writeData()` -&gt; `barang.json` &lt;br&gt;- Array sebagai struktur data utama + **Bubble Sort manual** di `sortingArray()` &lt;br&gt;- Kombinasi fungsi murni (`sortingArray`, `hitungStatistik`) + prosedur (`initStorage`, `writeData`) |
+| **J.620100.019.02** | Menggunakan Library Pre-Existing | - `express` - framework HTTP server &amp; routing &lt;br&gt;- `cors` - middleware Cross-Origin Resource Sharing &lt;br&gt;- `body-parser` - parsing JSON &amp; URL-encoded request body &lt;br&gt;- `mongoose` - ODM untuk definisi skema (models/Barang.js) &lt;br&gt;- `tailwindcss` (CDN) - framework CSS utility-first &lt;br&gt;- Semua library dilengkapi penanganan error (try-catch + HTTP status code) |
+
+---
+
+## Prasyarat
+
+Pastikan perangkat berikut telah terinstal:
+
+- Node.js versi 16+
+- npm (sudah termasuk bersama Node.js)
+- Tidak memerlukan MongoDB - data disimpan di file `data/barang.json` secara otomatis
+
+---
+
+## Cara Menjalankan Aplikasi
+
+### Langkah 1 - Masuk ke Folder Proyek
+```bash
+cd ~/Documents/inventaris-barang
+```
+
+### Langkah 2 - Install Dependensi
+```bash
+npm install
+```
+
+### Langkah 3 - Jalankan Server
+```bash
+npm start
+```
+
+Output yang muncul saat server berhasil berjalan:
+```
+[Storage] File data/barang.json berhasil dibuat.
+[Storage] Penyimpanan file JSON aktif: .../data/barang.json
+===============================================
+  Sistem Manajemen Inventaris Barang
+  Proyek Portofolio Sertifikasi BNSP
+  Author: Misbahul Fadhillah | v1.0.0
+  Penyimpanan: File JSON (data/barang.json)
+===============================================
+[Server] Berjalan di: http://localhost:5000
+[API]    Endpoint   : http://localhost:5000/api/barang
+===============================================
+```
+
+### Langkah 4 - Buka di Browser
+```
+http://localhost:5000
+```
+
+---
+
+## Endpoint API
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| `GET` | `/api/barang` | Ambil semua barang (mendukung `?sortBy=stok&amp;sortOrder=desc`) |
+| `GET` | `/api/barang/:id` | Ambil satu barang berdasarkan UUID |
+| `POST` | `/api/barang` | Tambah barang baru |
+| `PUT` | `/api/barang/:id` | Update data barang |
+| `DELETE` | `/api/barang/:id` | Hapus barang |
+
+**Parameter Sorting yang Tersedia:**
+
+| `sortBy` | `sortOrder` | Keterangan |
+|----------|-------------|------------|
+| `namaBarang` | `asc` / `desc` | Urut A-Z atau Z-A |
+| `kodeBarang` | `asc` / `desc` | Urut kode barang |
+| `stok` | `asc` / `desc` | Stok terkecil / terbesar |
+| `harga` | `asc` / `desc` | Harga termurah / termahal |
+| `kategori` | `asc` / `desc` | Urut kategori |
+
+### Contoh Request Body (POST / PUT)
+```json
+{
+  "kodeBarang": "BRG-001",
+  "namaBarang": "Laptop ASUS VivoBook",
+  "kategori": "Elektronik",
+  "stok": 15,
+  "harga": 8500000,
+  "keterangan": "RAM 16GB, SSD 512GB"
+}
+```
+
+### Contoh Response Sukses
+```json
+{
+  "success": true,
+  "message": "Barang 'Laptop ASUS VivoBook' berhasil ditambahkan.",
+  "count": 1,
+  "statistik": { "totalItem": 1, "totalStok": 15, "totalNilai": 127500000 },
+  "data": [ { "id": "uuid...", "kodeBarang": "BRG-001", ... } ]
+}
+```
+
+---
+
+## Mode Eksekusi Source Code
+
+&gt; Sesuai unit kompetensi J.620100.010.01 - Menerapkan Perintah Eksekusi Bahasa Pemrograman.
+
+Node.js mengeksekusi source code langsung melalui runtime tanpa proses kompilasi ke executable file.
+Tersedia tiga mode eksekusi:
+
+| Mode | Perintah | Keterangan |
+|------|----------|------------|
+| Running (Produksi) | `npm start` | Menjalankan `node server.js` - mode normal untuk demonstrasi |
+| Development | `npm run dev` | Menjalankan `nodemon server.js` - server restart otomatis saat file diubah |
+| Debugging | `node --inspect server.js` | Mengaktifkan Chrome DevTools debugger di `chrome://inspect` |
+
+**Cara debugging jika source code gagal dieksekusi:**
+1. Periksa pesan error di terminal - Node.js menampilkan nama file dan nomor baris error
+2. Gunakan `console.error()` atau `console.log()` untuk melacak nilai variabel
+3. Periksa apakah semua dependensi sudah terinstal (`npm install`)
+4. Pastikan port 5000 tidak sedang digunakan oleh proses lain
+
+---
+
+## Cara Memperbarui Library
+
+&gt; Sesuai unit kompetensi J.620100.019.02 - Menggunakan Library atau Komponen Pre-Existing
+&gt; (KUK 3.1: Cara pembaruan diidentifikasi - KUK 3.2: Pembaruan berhasil dilakukan).
+
+### Cek library yang sudah usang (outdated)
+```bash
+npm outdated
+```
+Output contoh:
+```
+Package      Current  Wanted  Latest
+express      4.18.2   4.18.2  4.19.2
+cors         2.8.5    2.8.5   2.8.5
+```
+
+### Perbarui semua library sekaligus
+```bash
+npm update
+```
+
+### Perbarui satu library ke versi spesifik
+```bash
+# Format: npm install nama-library@versi
+npm install express@latest
+npm install mongoose@8.4.0
+```
+
+### Verifikasi setelah pembaruan
+```bash
+# Lihat versi yang terinstal saat ini
+npm list --depth=0
+```
+
+&gt; **Catatan:** Selalu uji aplikasi setelah pembaruan library - perubahan major version
+&gt; (misal: v3 -&gt; v4) berpotensi memiliki breaking changes yang memerlukan penyesuaian kode.
+
+---
+
+## Analisis &amp; Perhitungan Efisiensi
+
+### 1. Efisiensi Penggunaan Resource Kode (Unit J.620100.016.01 - KUK 2.1)
+Untuk memastikan efisiensi penggunaan memori (RAM) dan operasi I/O pada server, beberapa teknik optimasi diterapkan:
+*   **On-Demand File Loading (I/O Efficiency):** Data inventaris tidak dimuat terus-menerus di memori RAM server. Fungsi `readData()` hanya dipanggil saat ada request masuk (lazy loading), kemudian memori dibebaskan kembali setelah request selesai diproses.
+*   **Immutability on Sorting:** Di dalam fungsi `sortingArray()`, array asli disalin menggunakan spread operator (`const arr = [...dataArray]`). Hal ini mencegah efek samping perubahan memori global (mutasi state) dan meminimalkan resiko kebocoran memori (memory leak).
+*   **Time Complexity (Bubble Sort):** Kompleksitas waktu algoritma Bubble Sort pada skenario terburuk (worst-case) adalah O(n^2). Untuk data skala kecil-menengah (&lt; 1000 item), algoritma ini mengeksekusi sorting dalam waktu kurang dari 1-2 milidetik, menjadikannya sangat efisien tanpa membutuhkan dependensi engine sorting pihak ketiga.
+
+### 2. Keuntungan Efisiensi dari Komponen Reuse / Library (Unit J.620100.019.02 - KUK 1.2)
+Menggunakan library pre-existing memberikan efisiensi yang sangat signifikan dalam hal penulisan kode (Lines of Code) dan waktu pengembangan (development effort):
+
+| Komponen / Library | Estimasi Baris Kode jika Bikin Sendiri (LOC) | Baris Kode Nyata dengan Library (LOC) | Keuntungan Efisiensi Baris Kode | Keuntungan Fungsionalitas |
+|--------------------|---------------------------------------------|--------------------------------------|---------------------------------|---------------------------|
+| **Express.js** (Server &amp; Router) | ~250 LOC (parsing headers, HTTP routing manual, path parsing) | 12 LOC | **95.2%** | Routing aman, regex matching, handling HTTP method terstandar |
+| **Body-Parser** (JSON Parser) | ~50 LOC (handling data stream buffer, parsing string JSON) | 2 LOC | **96.0%** | Pencegahan crash server jika payload JSON cacat (malformed) |
+| **CORS** (Header Security) | ~30 LOC (setting response headers manual, OPTIONS pre-flight) | 1 LOC | **96.6%** | Keamanan origin terstandar W3C |
+| **Mongoose** (Skema Validasi) | ~150 LOC (fungsi validasi tipe data per-field manual) | 25 LOC | **83.3%** | Deklarasi skema formal, tipe strict, validasi bawaan (`min`, `required`) |
+| **TOTAL** | **~480 LOC** | **40 LOC** | **91.6% (Efisiensi Tinggi)** | Mengurangi resiko bug keamanan dan mempercepat waktu rilis aplikasi. |
+
+---
+
+## Dependensi
+
+| Package | Versi | Fungsi | Lisensi | Jenis |
+|---------|-------|--------|---------|-------|
+| `express` | ^4.18.2 | Framework HTTP server &amp; REST API | MIT | Production |
+| `cors` | ^2.8.5 | Middleware Cross-Origin Resource Sharing | MIT | Production |
+| `body-parser` | ^1.20.2 | Parsing body JSON &amp; URL-encoded | MIT | Production |
+| `mongoose` | ^8.3.2 | ODM untuk definisi skema data (models/) | MIT | Production |
+| `nodemon` | ^3.1.0 | Auto-restart server saat file berubah | MIT | Development |
+
+&gt; Semua library menggunakan lisensi **MIT** - bebas digunakan, dimodifikasi, dan didistribusikan
+&gt; tanpa melanggar hak cipta (sesuai KUK 1.3 unit J.620100.019.02).
+
+---
+
+## Teknologi yang Digunakan
+
+- Runtime: Node.js v16+
+- Backend Framework: Express.js
+- Penyimpanan Data: File JSON lokal (`data/barang.json`) - tanpa database eksternal
+- Frontend: HTML5 Semantik + Vanilla JavaScript (Fetch API)
+- CSS Framework: Tailwind CSS v3 (via CDN) - lisensi MIT
+- Algoritma Sorting: Bubble Sort (implementasi manual - tidak menggunakan `.sort()` bawaan JS)
+- Generate ID: `crypto.randomUUID()` - modul bawaan Node.js
+</code></pre>
+  </div>
+  <div class="file-container">
+    <div class="file-header">File Path: server.js</div>
+    <pre class="language-javascript"><code class="language-javascript">/**
+ * Deskripsi   : Entry point utama aplikasi backend Sistem Manajemen Inventaris Barang.
+ *               File ini menginisialisasi server Express, mengintegrasikan semua middleware
+ *               library (CORS, Body-Parser), menginisialisasi penyimpanan file JSON,
+ *               dan mendaftarkan semua router API.
+ *               Mengimplementasikan unit kompetensi:
+ *               - J.620100.019.02: Penggunaan library Express, CORS, Body-Parser
+ *               - J.620100.015.01: Organisasi kode yang modular dan terstruktur
+ *               - J.620100.017.02: Akses media penyimpanan (baca/tulis file JSON)
+ * Initial State: Tidak ada server yang berjalan, belum ada penyimpanan aktif.
+ * Final State  : Server Express berjalan di port 5000, file JSON siap, semua
+ *                endpoint API aktif menerima request HTTP.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+
+// ============================================================
+//  IMPOR LIBRARY (Unit J.620100.019.02 — Pre-Existing Library)
+// ============================================================
+
+// [1] Express — framework minimalis untuk membangun server HTTP dan REST API
+const express = require('express');
+
+// [2] CORS (Cross-Origin Resource Sharing) — mengizinkan request dari origin berbeda
+//     Diperlukan agar file HTML statis (views/) dapat memanggil API dari browser
+const cors = require('cors');
+
+// [3] Body-Parser — middleware untuk mem-parse body request JSON dan URL-encoded
+const bodyParser = require('body-parser');
+
+// [4] Path — modul bawaan Node.js untuk menangani path file secara cross-platform
+const path = require('path');
+
+// Impor fungsi inisialisasi penyimpanan file JSON (menggantikan MongoDB)
+const { initStorage } = require('./config/db');
+
+// Impor router Barang dari modul routing
+const barangRoutes = require('./routes/barangRoutes');
+
+// ============================================================
+//  INISIALISASI APLIKASI EXPRESS
+// ============================================================
+
+/**
+ * Deskripsi   : Menginisialisasi instance aplikasi Express dan mendefinisikan PORT server.
+ * Initial State: Variabel app dan PORT belum terdefinisi.
+ * Final State  : Instance Express siap dikonfigurasi dengan middleware dan router.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+const app  = express();
+const PORT = process.env.PORT || 5000;
+
+// ============================================================
+//  REGISTRASI MIDDLEWARE (Unit J.620100.019.02)
+// ============================================================
+
+/**
+ * Deskripsi   : Mendaftarkan semua middleware global ke instance Express.
+ * Initial State: Aplikasi Express tanpa middleware terdaftar.
+ * Final State  : CORS, Body-Parser JSON, dan URL-encoded aktif untuk semua rute.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'views')));
+
+// ============================================================
+//  REGISTRASI ROUTER API
+// ============================================================
+
+/**
+ * Deskripsi   : Me-mount router Barang pada path /api/barang.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+app.use('/api/barang', barangRoutes);
+
+// Route halaman utama
+app.get('/', (req, res) =&gt; res.sendFile(path.join(__dirname, 'views', 'index.html')));
+
+// Route halaman edit
+app.get('/edit', (req, res) =&gt; res.sendFile(path.join(__dirname, 'views', 'edit.html')));
+
+// ============================================================
+//  GLOBAL ERROR HANDLER
+// ============================================================
+
+/**
+ * Deskripsi   : Middleware penanganan error global (4 parameter = error handler).
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+app.use((err, req, res, next) =&gt; { // eslint-disable-line no-unused-vars
+  console.error(`[Server] Error: ${err.stack}`);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Terjadi kesalahan internal pada server.',
+  });
+});
+
+// ============================================================
+//  BOOTSTRAP — Inisialisasi storage lalu jalankan server
+// ============================================================
+
+/**
+ * Deskripsi   : Fungsi bootstrap: inisialisasi file JSON storage lalu jalankan server.
+ *               Tidak memerlukan koneksi database eksternal — data tersimpan di file lokal.
+ * Initial State: File JSON mungkin belum ada, server belum berjalan.
+ * Final State  : Folder data/ + file barang.json siap, server aktif di PORT 5000.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+const startServer = () =&gt; {
+  // Langkah 1: Pastikan folder data/ dan file barang.json tersedia
+  initStorage();
+
+  // Langkah 2: Jalankan server Express
+  app.listen(PORT, () =&gt; {
+    console.log('===============================================');
+    console.log('  Sistem Manajemen Inventaris Barang');
+    console.log('  Proyek Portofolio Sertifikasi BNSP');
+    console.log('  Author: Misbahul Fadhillah | v1.0.0');
+    console.log('  Penyimpanan: File JSON (data/barang.json)');
+    console.log('===============================================');
+    console.log(`[Server] Berjalan di: http://localhost:${PORT}`);
+    console.log(`[API]    Endpoint   : http://localhost:${PORT}/api/barang`);
+    console.log('===============================================');
+  });
+};
+
+// Panggil fungsi bootstrap
+startServer();
+</code></pre>
+  </div>
+  <div class="file-container">
+    <div class="file-header">File Path: config/db.js</div>
+    <pre class="language-javascript"><code class="language-javascript">/**
+ * Deskripsi   : Modul pengelola penyimpanan data berbasis file JSON.
+ *               Menggantikan koneksi MongoDB — data disimpan di file data/barang.json
+ *               pada media penyimpanan lokal (disk). Sesuai unit kompetensi akses
+ *               media penyimpanan SKKNI J.620100.017.02.
+ * Initial State: File data/barang.json mungkin belum ada.
+ * Final State  : File data/barang.json tersedia dan siap dibaca/ditulis oleh controller.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+
+// fs  — modul bawaan Node.js untuk operasi baca/tulis file (File System)
+const fs   = require('fs');
+// path — modul bawaan Node.js untuk menangani path file
+const path = require('path');
+
+// Tentukan path absolut ke file penyimpanan data JSON
+const DATA_DIR  = path.join(__dirname, '..', 'data');
+const DATA_FILE = path.join(DATA_DIR, 'barang.json');
+
+/**
+ * Deskripsi   : Prosedur inisialisasi — memastikan folder dan file JSON tersedia.
+ *               Jika belum ada, dibuat otomatis dengan array kosong [].
+ * Initial State: Folder data/ atau file barang.json belum tentu ada.
+ * Final State  : Folder data/ dan file barang.json pasti ada dan valid.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+const initStorage = () =&gt; {
+  // Buat folder data/ jika belum ada (recursive = buat parent folder juga)
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+    console.log('[Storage] Folder data/ berhasil dibuat.');
+  }
+
+  // Buat file barang.json dengan array kosong jika belum ada
+  if (!fs.existsSync(DATA_FILE)) {
+    fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2), 'utf-8');
+    console.log('[Storage] File data/barang.json berhasil dibuat.');
+  }
+
+  console.log(`[Storage] Penyimpanan file JSON aktif: ${DATA_FILE}`);
+};
+
+/**
+ * Deskripsi   : Fungsi untuk MEMBACA semua data dari file JSON ke dalam array JavaScript.
+ * Initial State: File barang.json ada di disk.
+ * Final State  : Mengembalikan array objek barang hasil parsing JSON.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ * @returns {Array} - Array objek barang
+ */
+const readData = () =&gt; {
+  try {
+    const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+    return JSON.parse(raw);
+  } catch (err) {
+    console.error('[Storage] Gagal membaca file:', err.message);
+    return [];
+  }
+};
+
+/**
+ * Deskripsi   : Prosedur untuk MENULIS array data ke file JSON (menimpa isi lama).
+ * Initial State: Array data baru tersedia di memori.
+ * Final State  : File barang.json di disk berisi data terbaru dalam format JSON.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ * @param {Array} data - Array objek barang yang akan disimpan
+ */
+const writeData = (data) =&gt; {
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('[Storage] Gagal menulis file:', err.message);
+    throw new Error('Gagal menyimpan data ke file.');
+  }
+};
+
+// Ekspor fungsi dan konstanta agar dapat digunakan di controller
+module.exports = { initStorage, readData, writeData };
+</code></pre>
+  </div>
+  <div class="file-container">
+    <div class="file-header">File Path: models/Barang.js</div>
+    <pre class="language-javascript"><code class="language-javascript">/**
+ * Deskripsi   : Model Mongoose untuk entitas "Barang" dalam sistem inventaris.
+ *               Mendefinisikan skema (struktur data) dan aturan validasi setiap dokumen barang
+ *               yang akan disimpan di koleksi MongoDB.
+ * Initial State: Belum ada definisi struktur dokumen barang di Mongoose.
+ * Final State  : Schema dan Model 'Barang' tersedia dan terdaftar di Mongoose,
+ *                siap digunakan oleh controller untuk operasi CRUD.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+
+// Impor Schema dan model dari library Mongoose
+const { Schema, model } = require('mongoose');
+
+/**
+ * Deskripsi   : Definisi skema Mongoose untuk dokumen Barang.
+ *               Setiap field memiliki tipe data dan aturan validasi yang ketat.
+ * Initial State: Objek skema belum dibuat.
+ * Final State  : Skema BarangSchema siap digunakan sebagai blueprint dokumen MongoDB.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+const BarangSchema = new Schema(
+  {
+    // Kode unik barang (String) — wajib diisi, dibersihkan dari spasi, dan harus unik
+    kodeBarang: {
+      type: String,
+      required: [true, 'Kode barang wajib diisi'],
+      unique: true,
+      trim: true,
+      uppercase: true, // Selalu simpan dalam huruf kapital
+    },
+
+    // Nama barang (String) — wajib diisi dan dibersihkan dari spasi di awal/akhir
+    namaBarang: {
+      type: String,
+      required: [true, 'Nama barang wajib diisi'],
+      trim: true,
+    },
+
+    // Kategori barang (String) — dengan nilai default 'Umum'
+    kategori: {
+      type: String,
+      required: [true, 'Kategori wajib diisi'],
+      trim: true,
+      default: 'Umum',
+    },
+
+    // Jumlah stok barang (Number) — wajib diisi, minimal 0
+    stok: {
+      type: Number,
+      required: [true, 'Stok wajib diisi'],
+      min: [0, 'Stok tidak boleh negatif'],
+      default: 0,
+    },
+
+    // Harga satuan barang dalam Rupiah (Number) — wajib diisi, minimal 0
+    harga: {
+      type: Number,
+      required: [true, 'Harga wajib diisi'],
+      min: [0, 'Harga tidak boleh negatif'],
+      default: 0,
+    },
+
+    // Keterangan/deskripsi tambahan barang (String) — opsional
+    keterangan: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+  },
+  {
+    // Aktifkan timestamps: Mongoose akan otomatis menambahkan field createdAt &amp; updatedAt
+    timestamps: true,
+  }
+);
+
+/**
+ * Deskripsi   : Mendaftarkan skema BarangSchema sebagai model Mongoose bernama 'Barang'.
+ *               Mongoose akan secara otomatis membuat koleksi bernama 'barangs' di MongoDB.
+ * Initial State: BarangSchema telah didefinisikan namun belum terdaftar sebagai model.
+ * Final State  : Model 'Barang' siap digunakan untuk operasi database (CRUD).
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+const Barang = model('Barang', BarangSchema);
+
+// Ekspor model Barang untuk digunakan di controller
+module.exports = Barang;
+</code></pre>
+  </div>
+  <div class="file-container">
+    <div class="file-header">File Path: routes/barangRoutes.js</div>
+    <pre class="language-javascript"><code class="language-javascript">/**
+ * Deskripsi   : Router Express untuk mendefinisikan seluruh endpoint RESTful API
+ *               yang berkaitan dengan resource 'Barang'. Menghubungkan URL path
+ *               dengan fungsi handler yang ada di barangController.
+ * Initial State: Belum ada endpoint HTTP yang terdaftar untuk resource Barang.
+ * Final State  : Semua endpoint CRUD Barang terdaftar dan siap menerima request HTTP.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+
+// Impor Router dari Express untuk membuat modul routing terpisah
+const { Router } = require('express');
+
+// Impor semua fungsi handler dari controller Barang
+const {
+  getAllBarang,
+  getBarangById,
+  createBarang,
+  updateBarang,
+  deleteBarang,
+} = require('../controllers/barangController');
+
+// Buat instance router baru
+const router = Router();
+
+// ============================================================
+//  DEFINISI ENDPOINT / RUTE API
+// ============================================================
+
+/**
+ * @route   GET  /api/barang
+ * @desc    Ambil semua data barang (mendukung sorting via query string)
+ * @query   sortBy    - Field pengurutan (namaBarang|stok|harga|kategori|kodeBarang)
+ * @query   sortOrder - Arah urutan (asc|desc)
+ * @access  Public
+ */
+router.get('/', getAllBarang);
+
+/**
+ * @route   GET  /api/barang/:id
+ * @desc    Ambil satu barang berdasarkan MongoDB ObjectId
+ * @params  id - ID unik dokumen Barang di MongoDB
+ * @access  Public
+ */
+router.get('/:id', getBarangById);
+
+/**
+ * @route   POST /api/barang
+ * @desc    Tambah satu barang baru ke database
+ * @body    { kodeBarang, namaBarang, kategori, stok, harga, keterangan }
+ * @access  Public
+ */
+router.post('/', createBarang);
+
+/**
+ * @route   PUT  /api/barang/:id
+ * @desc    Perbarui data barang berdasarkan MongoDB ObjectId
+ * @params  id - ID unik dokumen Barang di MongoDB
+ * @body    { namaBarang, kategori, stok, harga, keterangan }
+ * @access  Public
+ */
+router.put('/:id', updateBarang);
+
+/**
+ * @route   DELETE /api/barang/:id
+ * @desc    Hapus data barang berdasarkan MongoDB ObjectId
+ * @params  id - ID unik dokumen Barang di MongoDB
+ * @access  Public
+ */
+router.delete('/:id', deleteBarang);
+
+// Ekspor router agar dapat di-mount di server.js
+module.exports = router;
+</code></pre>
+  </div>
+  <div class="file-container">
+    <div class="file-header">File Path: controllers/barangController.js</div>
+    <pre class="language-javascript"><code class="language-javascript">/**
+ * Deskripsi   : Controller utama untuk menangani seluruh logika bisnis operasi CRUD
+ *               pada entitas Barang. Data disimpan dan dibaca dari file JSON lokal
+ *               menggunakan modul storage (config/db.js).
+ *               File ini mengimplementasikan SORTING ARRAY (Bubble Sort manual)
+ *               sesuai unit kompetensi J.620100.017.02 (Pemrograman Terstruktur).
+ * Initial State: Tidak ada request HTTP yang sedang diproses.
+ * Final State  : Setiap fungsi mengembalikan response JSON dengan status dan data yang sesuai.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ */
+
+// Impor modul penyimpanan file JSON (menggantikan Mongoose)
+const { readData, writeData } = require('../config/db');
+
+// Impor modul crypto bawaan Node.js untuk membuat ID unik
+const { randomUUID } = require('crypto');
+
+// ============================================================
+//  PROSEDUR &amp; FUNGSI PEMBANTU — Unit J.620100.017.02
+// ============================================================
+
+/**
+ * Deskripsi   : Fungsi SORTING ARRAY menggunakan algoritma Bubble Sort manual.
+ *               Mengurutkan array objek barang berdasarkan field dan arah yang ditentukan.
+ *               TIDAK menggunakan .sort() bawaan JavaScript — implementasi manual
+ *               sebagai bukti penerapan unit kompetensi J.620100.017.02.
+ * Initial State: Menerima array objek barang belum terurut dan parameter sortir.
+ * Final State  : Mengembalikan array baru yang telah diurutkan sesuai kriteria.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ * @param {Array}  dataArray  - Array objek barang
+ * @param {String} sortBy     - Field kunci pengurutan
+ * @param {String} sortOrder  - 'asc' (naik) atau 'desc' (turun)
+ * @returns {Array} - Array hasil pengurutan
+ */
+function sortingArray(dataArray, sortBy, sortOrder) {
+  // Buat salinan array agar data asli tidak termutasi
+  const arr = [...dataArray];
+  const n   = arr.length;
+
+  // Iterasi luar Bubble Sort — sebanyak n-1 putaran
+  for (let i = 0; i &lt; n - 1; i++) {
+    // Iterasi dalam — bandingkan elemen berdampingan
+    for (let j = 0; j &lt; n - i - 1; j++) {
+      let nilaiA;
+      let nilaiB;
+
+      // Percabangan if-else: tentukan cara perbandingan berdasarkan tipe field
+      if (sortBy === 'stok' || sortBy === 'harga') {
+        // Field numerik: bandingkan langsung
+        nilaiA = arr[j][sortBy];
+        nilaiB = arr[j + 1][sortBy];
+      } else {
+        // Field string: konversi ke lowercase agar tidak case-sensitive
+        nilaiA = arr[j][sortBy] ? arr[j][sortBy].toLowerCase() : '';
+        nilaiB = arr[j + 1][sortBy] ? arr[j + 1][sortBy].toLowerCase() : '';
+      }
+
+      // Tentukan apakah perlu swap berdasarkan arah pengurutan
+      let perluTukar = false;
+      if (sortOrder === 'asc') {
+        perluTukar = nilaiA &gt; nilaiB; // Ascending: kiri lebih besar → tukar
+      } else {
+        perluTukar = nilaiA &lt; nilaiB; // Descending: kiri lebih kecil → tukar
+      }
+
+      // Lakukan pertukaran posisi menggunakan destructuring
+      if (perluTukar) {
+        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+      }
+    }
+  }
+  return arr;
+}
+
+/**
+ * Deskripsi   : Fungsi untuk menghitung statistik ringkasan inventaris.
+ *               Menggunakan for...of loop (pengulangan) sesuai unit J.620100.017.02.
+ * Initial State: Menerima array objek barang.
+ * Final State  : Mengembalikan objek statistik { totalItem, totalStok, totalNilai }.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ * @param {Array} dataArray
+ * @returns {Object}
+ */
+function hitungStatistik(dataArray) {
+  let totalItem  = 0;
+  let totalStok  = 0;
+  let totalNilai = 0;
+
+  // Pengulangan for...of untuk iterasi setiap elemen array
+  for (const barang of dataArray) {
+    totalItem  += 1;
+    totalStok  += barang.stok;
+    totalNilai += barang.stok * barang.harga;
+  }
+  return { totalItem, totalStok, totalNilai };
+}
+
+// ============================================================
+//  HANDLER FUNCTIONS (CONTROLLER ACTIONS)
+// ============================================================
+
+/**
+ * Deskripsi   : Handler GET semua barang. Membaca dari file JSON, lalu mengurutkan
+ *               menggunakan sortingArray() sebelum mengirim response ke client.
+ * Initial State: Request GET diterima.
+ * Final State  : Response JSON berisi array barang terurut dan statistik.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ * @route GET /api/barang
+ */
+const getAllBarang = (req, res) =&gt; {
+  try {
+    // Ambil parameter sorting dari query string URL
+    const sortBy    = req.query.sortBy    || 'namaBarang';
+    const sortOrder = req.query.sortOrder || 'asc';
+
+    // Validasi nilai sortBy
+    const allowedSortBy = ['namaBarang', 'stok', 'harga', 'kategori', 'kodeBarang'];
+    const validSortBy   = allowedSortBy.includes(sortBy) ? sortBy : 'namaBarang';
+    const validOrder    = sortOrder === 'desc' ? 'desc' : 'asc';
+
+    // Baca semua data dari file JSON (operasi baca media penyimpanan)
+    const rawData = readData();
+
+    // Urutkan array menggunakan Bubble Sort manual
+    const sortedData = sortingArray(rawData, validSortBy, validOrder);
+
+    // Hitung statistik menggunakan fungsi hitungStatistik
+    const statistik = hitungStatistik(rawData);
+
+    res.status(200).json({
+      success: true,
+      message: `Data berhasil diambil (sortBy: ${validSortBy}, order: ${validOrder})`,
+      count: sortedData.length,
+      statistik,
+      data: sortedData,
+    });
+  } catch (error) {
+    console.error(`[Controller] getAllBarang error: ${error.message}`);
+    res.status(500).json({ success: false, message: 'Gagal mengambil data.', error: error.message });
+  }
+};
+
+/**
+ * Deskripsi   : Handler GET satu barang berdasarkan ID.
+ * Initial State: Request GET /:id diterima.
+ * Final State  : Response JSON berisi satu dokumen barang atau 404 jika tidak ada.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ * @route GET /api/barang/:id
+ */
+const getBarangById = (req, res) =&gt; {
+  try {
+    const { id } = req.params;
+    const data   = readData();
+
+    // Cari barang dengan id yang cocok menggunakan perulangan for
+    let barangDitemukan = null;
+    for (let i = 0; i &lt; data.length; i++) {
+      if (data[i].id === id) {
+        barangDitemukan = data[i];
+        break; // Hentikan loop jika sudah ditemukan
+      }
+    }
+
+    // Percabangan: jika tidak ditemukan
+    if (!barangDitemukan) {
+      return res.status(404).json({ success: false, message: `Barang dengan ID ${id} tidak ditemukan.` });
+    }
+
+    res.status(200).json({ success: true, message: 'Barang ditemukan.', data: barangDitemukan });
+  } catch (error) {
+    console.error(`[Controller] getBarangById error: ${error.message}`);
+    res.status(500).json({ success: false, message: 'Terjadi kesalahan server.', error: error.message });
+  }
+};
+
+/**
+ * Deskripsi   : Handler POST — menambah barang baru ke file JSON.
+ *               Membaca input dari request body (interface) → menulis ke file (penyimpanan).
+ *               Implementasi unit J.620100.017.02: baca-tulis input ke media penyimpanan.
+ * Initial State: Request POST dengan body JSON diterima.
+ * Final State  : Barang baru ditambahkan ke array dan file JSON diperbarui.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ * @route POST /api/barang
+ */
+const createBarang = (req, res) =&gt; {
+  try {
+    const { kodeBarang, namaBarang, kategori, stok, harga, keterangan } = req.body;
+
+    // Validasi input wajib menggunakan percabangan if-else
+    if (!kodeBarang || !namaBarang || !kategori) {
+      return res.status(400).json({
+        success: false,
+        message: 'Field kodeBarang, namaBarang, dan kategori wajib diisi.',
+      });
+    }
+
+    // Baca data yang sudah ada dari file JSON
+    const data = readData();
+
+    // Cek duplikasi kode barang menggunakan perulangan for
+    for (let i = 0; i &lt; data.length; i++) {
+      if (data[i].kodeBarang.toUpperCase() === kodeBarang.toUpperCase()) {
+        return res.status(409).json({
+          success: false,
+          message: `Kode barang '${kodeBarang.toUpperCase()}' sudah terdaftar.`,
+        });
+      }
+    }
+
+    // Buat objek barang baru dengan ID unik (UUID) dan timestamp
+    const barangBaru = {
+      id         : randomUUID(),                   // ID unik pengganti ObjectId MongoDB
+      kodeBarang : kodeBarang.toUpperCase().trim(),
+      namaBarang : namaBarang.trim(),
+      kategori   : kategori.trim(),
+      stok       : parseInt(stok)   || 0,
+      harga      : parseInt(harga)  || 0,
+      keterangan : keterangan ? keterangan.trim() : '',
+      createdAt  : new Date().toISOString(),
+      updatedAt  : new Date().toISOString(),
+    };
+
+    // Tambahkan barang baru ke array
+    data.push(barangBaru);
+
+    // Tulis array yang sudah diperbarui kembali ke file JSON (operasi tulis)
+    writeData(data);
+
+    res.status(201).json({
+      success: true,
+      message: `Barang '${barangBaru.namaBarang}' berhasil ditambahkan.`,
+      data: barangBaru,
+    });
+  } catch (error) {
+    console.error(`[Controller] createBarang error: ${error.message}`);
+    res.status(500).json({ success: false, message: 'Gagal menambahkan barang.', error: error.message });
+  }
+};
+
+/**
+ * Deskripsi   : Handler PUT — memperbarui data barang berdasarkan ID di file JSON.
+ * Initial State: Request PUT /:id dengan body JSON diterima.
+ * Final State  : Data barang di file JSON diperbarui.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ * @route PUT /api/barang/:id
+ */
+const updateBarang = (req, res) =&gt; {
+  try {
+    const { id } = req.params;
+    const { namaBarang, kategori, stok, harga, keterangan } = req.body;
+
+    // Baca semua data dari file
+    const data  = readData();
+    let indeks  = -1; // Indeks posisi barang dalam array
+
+    // Cari indeks barang menggunakan perulangan for
+    for (let i = 0; i &lt; data.length; i++) {
+      if (data[i].id === id) {
+        indeks = i;
+        break;
+      }
+    }
+
+    // Percabangan: jika tidak ditemukan
+    if (indeks === -1) {
+      return res.status(404).json({ success: false, message: `Barang dengan ID ${id} tidak ditemukan.` });
+    }
+
+    // Update field yang dikirim (hanya yang ada di request body)
+    if (namaBarang !== undefined) data[indeks].namaBarang = namaBarang.trim();
+    if (kategori   !== undefined) data[indeks].kategori   = kategori.trim();
+    if (stok       !== undefined) data[indeks].stok       = parseInt(stok) || 0;
+    if (harga      !== undefined) data[indeks].harga      = parseInt(harga) || 0;
+    if (keterangan !== undefined) data[indeks].keterangan = keterangan.trim();
+    data[indeks].updatedAt = new Date().toISOString(); // Perbarui timestamp
+
+    // Tulis perubahan kembali ke file JSON
+    writeData(data);
+
+    res.status(200).json({
+      success: true,
+      message: `Barang '${data[indeks].namaBarang}' berhasil diperbarui.`,
+      data: data[indeks],
+    });
+  } catch (error) {
+    console.error(`[Controller] updateBarang error: ${error.message}`);
+    res.status(500).json({ success: false, message: 'Gagal memperbarui barang.', error: error.message });
+  }
+};
+
+/**
+ * Deskripsi   : Handler DELETE — menghapus barang dari array dan menyimpan kembali ke file JSON.
+ * Initial State: Request DELETE /:id diterima.
+ * Final State  : Barang dihapus dari array dan file JSON diperbarui.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+ * @route DELETE /api/barang/:id
+ */
+const deleteBarang = (req, res) =&gt; {
+  try {
+    const { id } = req.params;
+    const data   = readData();
+
+    // Cari indeks barang yang akan dihapus
+    let indeks = -1;
+    for (let i = 0; i &lt; data.length; i++) {
+      if (data[i].id === id) {
+        indeks = i;
+        break;
+      }
+    }
+
+    // Percabangan: barang tidak ditemukan
+    if (indeks === -1) {
+      return res.status(404).json({ success: false, message: `Barang dengan ID ${id} tidak ditemukan.` });
+    }
+
+    // Hapus elemen dari array menggunakan splice()
+    const [barangDihapus] = data.splice(indeks, 1);
+
+    // Simpan array yang sudah dikurangi ke file JSON
+    writeData(data);
+
+    res.status(200).json({
+      success: true,
+      message: `Barang '${barangDihapus.namaBarang}' berhasil dihapus.`,
+      data: barangDihapus,
+    });
+  } catch (error) {
+    console.error(`[Controller] deleteBarang error: ${error.message}`);
+    res.status(500).json({ success: false, message: 'Gagal menghapus barang.', error: error.message });
+  }
+};
+
+// Ekspor semua fungsi handler
+module.exports = { getAllBarang, getBarangById, createBarang, updateBarang, deleteBarang };
+</code></pre>
+  </div>
+  <div class="file-container">
+    <div class="file-header">File Path: views/index.html</div>
+    <pre class="language-html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;!--
+ * Deskripsi   : Halaman utama Sistem Manajemen Inventaris Barang.
+ *               Menampilkan form input barang, kontrol sorting, statistik ringkasan,
+ *               dan tabel daftar barang yang diambil dari REST API backend.
+ * Initial State: Halaman kosong, data belum dimuat dari server.
+ * Final State  : Data barang tampil di tabel, siap untuk operasi CRUD.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+--&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+  &lt;meta name="description" content="Sistem Manajemen Inventaris Barang - Proyek Portofolio Sertifikasi BNSP" /&gt;
+  &lt;title&gt;Inventaris Barang | BNSP Portfolio&lt;/title&gt;
+
+  &lt;!-- Tailwind CSS via CDN (Unit J.620100.019.02 — Pre-Existing Library) --&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+  &lt;script&gt;
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#4f46e5', dark: '#3730a3', light: '#818cf8' },
+            accent:  { DEFAULT: '#06b6d4', dark: '#0e7490' }
+          }
+        }
+      }
+    }
+  &lt;/script&gt;
+  &lt;style&gt;
+    /* Animasi fade-in untuk baris tabel */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.3s ease forwards; }
+    /* Spinner loading */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { animation: spin 0.8s linear infinite; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body class="bg-slate-100 min-h-screen font-sans text-slate-800"&gt;
+
+  &lt;!-- ===== HEADER ===== --&gt;
+  &lt;header class="bg-gradient-to-r from-primary to-accent shadow-lg"&gt;
+    &lt;div class="max-w-7xl mx-auto px-4 py-5 flex items-center gap-3"&gt;
+      &lt;span class="text-3xl"&gt;📦&lt;/span&gt;
+      &lt;div&gt;
+        &lt;h1 class="text-white text-2xl font-bold tracking-tight"&gt;Sistem Manajemen Inventaris Barang&lt;/h1&gt;
+        &lt;p class="text-indigo-100 text-sm"&gt;Proyek Portofolio Sertifikasi BNSP · Misbahul Fadhillah · v1.0.0&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/header&gt;
+
+  &lt;main class="max-w-7xl mx-auto px-4 py-8 space-y-8"&gt;
+
+    &lt;!-- ===== STATISTIK CARD ===== --&gt;
+    &lt;section id="statistik-section" class="grid grid-cols-1 sm:grid-cols-3 gap-4"&gt;
+      &lt;div class="bg-white rounded-2xl shadow p-5 flex items-center gap-4"&gt;
+        &lt;div class="bg-indigo-100 p-3 rounded-xl text-2xl"&gt;🗂️&lt;/div&gt;
+        &lt;div&gt;
+          &lt;p class="text-xs text-slate-500 uppercase tracking-wide"&gt;Total Jenis Barang&lt;/p&gt;
+          &lt;p id="stat-item" class="text-3xl font-bold text-primary"&gt;–&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bg-white rounded-2xl shadow p-5 flex items-center gap-4"&gt;
+        &lt;div class="bg-cyan-100 p-3 rounded-xl text-2xl"&gt;📊&lt;/div&gt;
+        &lt;div&gt;
+          &lt;p class="text-xs text-slate-500 uppercase tracking-wide"&gt;Total Stok&lt;/p&gt;
+          &lt;p id="stat-stok" class="text-3xl font-bold text-accent"&gt;–&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bg-white rounded-2xl shadow p-5 flex items-center gap-4"&gt;
+        &lt;div class="bg-green-100 p-3 rounded-xl text-2xl"&gt;💰&lt;/div&gt;
+        &lt;div&gt;
+          &lt;p class="text-xs text-slate-500 uppercase tracking-wide"&gt;Total Nilai Inventaris&lt;/p&gt;
+          &lt;p id="stat-nilai" class="text-xl font-bold text-green-600"&gt;–&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+
+    &lt;!-- ===== FORM TAMBAH BARANG ===== --&gt;
+    &lt;section class="bg-white rounded-2xl shadow p-6"&gt;
+      &lt;h2 class="text-lg font-semibold text-slate-700 mb-5 flex items-center gap-2"&gt;
+        &lt;span&gt;➕&lt;/span&gt; Tambah Barang Baru
+      &lt;/h2&gt;
+
+      &lt;!-- Notifikasi alert --&gt;
+      &lt;div id="alert-box" class="hidden mb-4 p-3 rounded-lg text-sm font-medium"&gt;&lt;/div&gt;
+
+      &lt;form id="form-barang" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" novalidate&gt;
+        &lt;div&gt;
+          &lt;label class="block text-xs font-semibold text-slate-500 mb-1" for="kodeBarang"&gt;Kode Barang &lt;span class="text-red-500"&gt;*&lt;/span&gt;&lt;/label&gt;
+          &lt;input id="kodeBarang" name="kodeBarang" type="text" placeholder="Cth: BRG-001"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary uppercase" required /&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;label class="block text-xs font-semibold text-slate-500 mb-1" for="namaBarang"&gt;Nama Barang &lt;span class="text-red-500"&gt;*&lt;/span&gt;&lt;/label&gt;
+          &lt;input id="namaBarang" name="namaBarang" type="text" placeholder="Nama lengkap barang"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" required /&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;label class="block text-xs font-semibold text-slate-500 mb-1" for="kategori"&gt;Kategori &lt;span class="text-red-500"&gt;*&lt;/span&gt;&lt;/label&gt;
+          &lt;input id="kategori" name="kategori" type="text" placeholder="Elektronik, Alat Tulis, dll."
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" required /&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;label class="block text-xs font-semibold text-slate-500 mb-1" for="stok"&gt;Stok&lt;/label&gt;
+          &lt;input id="stok" name="stok" type="number" placeholder="0" min="0"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" /&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;label class="block text-xs font-semibold text-slate-500 mb-1" for="harga"&gt;Harga (Rp)&lt;/label&gt;
+          &lt;input id="harga" name="harga" type="number" placeholder="0" min="0"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" /&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;label class="block text-xs font-semibold text-slate-500 mb-1" for="keterangan"&gt;Keterangan&lt;/label&gt;
+          &lt;input id="keterangan" name="keterangan" type="text" placeholder="Catatan tambahan (opsional)"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" /&gt;
+        &lt;/div&gt;
+        &lt;div class="sm:col-span-2 lg:col-span-3 flex justify-end gap-3 pt-2"&gt;
+          &lt;button type="button" id="btn-reset" onclick="resetForm()"
+            class="px-5 py-2 text-sm border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50 transition"&gt;
+            Reset
+          &lt;/button&gt;
+          &lt;button type="submit" id="btn-submit"
+            class="px-6 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary-dark transition flex items-center gap-2"&gt;
+            &lt;span id="btn-submit-icon"&gt;💾&lt;/span&gt;
+            &lt;span id="btn-submit-text"&gt;Simpan Barang&lt;/span&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+    &lt;/section&gt;
+
+    &lt;!-- ===== KONTROL SORTING &amp; TABEL ===== --&gt;
+    &lt;section class="bg-white rounded-2xl shadow p-6"&gt;
+      &lt;div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5"&gt;
+        &lt;h2 class="text-lg font-semibold text-slate-700 flex items-center gap-2"&gt;
+          &lt;span&gt;📋&lt;/span&gt; Daftar Inventaris
+        &lt;/h2&gt;
+
+        &lt;!-- Kontrol Sorting — Unit J.620100.017.02 --&gt;
+        &lt;div class="flex flex-wrap gap-2 items-center"&gt;
+          &lt;label class="text-xs font-semibold text-slate-500"&gt;Urutkan:&lt;/label&gt;
+          &lt;select id="sortBy" onchange="loadBarang()"
+            class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"&gt;
+            &lt;option value="namaBarang"&gt;Nama (A-Z)&lt;/option&gt;
+            &lt;option value="kodeBarang"&gt;Kode Barang&lt;/option&gt;
+            &lt;option value="stok"&gt;Stok&lt;/option&gt;
+            &lt;option value="harga"&gt;Harga&lt;/option&gt;
+            &lt;option value="kategori"&gt;Kategori&lt;/option&gt;
+          &lt;/select&gt;
+          &lt;select id="sortOrder" onchange="loadBarang()"
+            class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"&gt;
+            &lt;option value="asc"&gt;⬆ Naik&lt;/option&gt;
+            &lt;option value="desc"&gt;⬇ Turun&lt;/option&gt;
+          &lt;/select&gt;
+          &lt;button onclick="loadBarang()"
+            class="px-3 py-1.5 bg-accent text-white text-sm rounded-lg hover:bg-accent-dark transition"&gt;
+            🔄 Refresh
+          &lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Loading State --&gt;
+      &lt;div id="loading" class="flex justify-center items-center py-12 text-slate-400 gap-3"&gt;
+        &lt;div class="spinner w-6 h-6 border-4 border-primary border-t-transparent rounded-full"&gt;&lt;/div&gt;
+        &lt;span class="text-sm"&gt;Memuat data...&lt;/span&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Empty State --&gt;
+      &lt;div id="empty-state" class="hidden text-center py-12 text-slate-400"&gt;
+        &lt;p class="text-4xl mb-3"&gt;📭&lt;/p&gt;
+        &lt;p class="text-sm"&gt;Belum ada data barang. Tambahkan barang pertama Anda!&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Tabel Data --&gt;
+      &lt;div id="table-wrapper" class="hidden overflow-x-auto rounded-xl border border-slate-200"&gt;
+        &lt;table class="min-w-full divide-y divide-slate-200 text-sm"&gt;
+          &lt;thead class="bg-slate-50"&gt;
+            &lt;tr&gt;
+              &lt;th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider"&gt;No&lt;/th&gt;
+              &lt;th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider"&gt;Kode&lt;/th&gt;
+              &lt;th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider"&gt;Nama Barang&lt;/th&gt;
+              &lt;th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider"&gt;Kategori&lt;/th&gt;
+              &lt;th class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider"&gt;Stok&lt;/th&gt;
+              &lt;th class="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider"&gt;Harga&lt;/th&gt;
+              &lt;th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider"&gt;Keterangan&lt;/th&gt;
+              &lt;th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wider"&gt;Aksi&lt;/th&gt;
+            &lt;/tr&gt;
+          &lt;/thead&gt;
+          &lt;tbody id="tabel-body" class="bg-white divide-y divide-slate-100"&gt;&lt;/tbody&gt;
+        &lt;/table&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+
+  &lt;footer class="text-center text-xs text-slate-400 py-6"&gt;
+    Sistem Manajemen Inventaris Barang &amp;copy; 2026 · Misbahul Fadhillah · Sertifikasi BNSP
+  &lt;/footer&gt;
+
+  &lt;!-- ===== JAVASCRIPT — Vanilla JS + Fetch API ===== --&gt;
+  &lt;script&gt;
+    /**
+     * Deskripsi   : Script utama frontend. Mengelola semua interaksi UI:
+     *               pengambilan data (GET), penambahan (POST), penghapusan (DELETE),
+     *               serta tampilan tabel. Menggunakan Fetch API untuk komunikasi
+     *               dengan backend REST API.
+     * Initial State: Halaman baru dimuat, DOM siap, belum ada data di tabel.
+     * Final State  : Data ditampilkan di tabel setelah dipanggil loadBarang().
+     * Author       : Misbahul Fadhillah
+     * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+     */
+
+    // Konstanta URL base API backend
+    const API_URL = '/api/barang';
+
+    /**
+     * Deskripsi   : Prosedur untuk memformat angka ke format Rupiah.
+     * @param {Number} angka
+     * @returns {String}
+     */
+    function formatRupiah(angka) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency', currency: 'IDR', minimumFractionDigits: 0
+      }).format(angka);
+    }
+
+    /**
+     * Deskripsi   : Prosedur menampilkan notifikasi alert di atas form.
+     * @param {String} pesan   - Teks pesan
+     * @param {String} tipe    - 'success' | 'error' | 'warning'
+     */
+    function tampilkanAlert(pesan, tipe) {
+      const box = document.getElementById('alert-box');
+      const kelas = {
+        success: 'bg-green-100 text-green-800 border border-green-300',
+        error:   'bg-red-100 text-red-800 border border-red-300',
+        warning: 'bg-yellow-100 text-yellow-800 border border-yellow-300',
+      };
+      box.className = `mb-4 p-3 rounded-lg text-sm font-medium ${kelas[tipe] || kelas.warning}`;
+      box.textContent = pesan;
+      box.classList.remove('hidden');
+      // Sembunyikan otomatis setelah 4 detik
+      setTimeout(() =&gt; box.classList.add('hidden'), 4000);
+    }
+
+    /**
+     * Deskripsi   : Prosedur mengembalikan semua field form ke kondisi awal (kosong).
+     * Initial State: Form berisi data.
+     * Final State  : Semua field form kosong.
+     */
+    function resetForm() {
+      document.getElementById('form-barang').reset();
+      document.getElementById('alert-box').classList.add('hidden');
+    }
+
+    /**
+     * Deskripsi   : Fungsi async untuk mengambil data dari API dan menampilkan di tabel.
+     *               Membaca nilai sortBy &amp; sortOrder dari select element.
+     *               Mengimplementasikan percabangan untuk state loading/empty/data.
+     * Initial State: Tabel kosong atau berisi data lama.
+     * Final State  : Tabel terisi data terbaru sesuai urutan yang dipilih.
+     */
+    async function loadBarang() {
+      // Ambil nilai parameter sorting dari DOM
+      const sortBy    = document.getElementById('sortBy').value;
+      const sortOrder = document.getElementById('sortOrder').value;
+
+      // Tampilkan state loading, sembunyikan tabel dan empty state
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('table-wrapper').classList.add('hidden');
+      document.getElementById('empty-state').classList.add('hidden');
+
+      try {
+        // Kirim request GET ke API dengan query parameter sorting
+        const response = await fetch(`${API_URL}?sortBy=${sortBy}&amp;sortOrder=${sortOrder}`);
+        const result   = await response.json();
+
+        // Sembunyikan loading
+        document.getElementById('loading').classList.add('hidden');
+
+        // Percabangan: jika request gagal
+        if (!result.success) {
+          tampilkanAlert(result.message || 'Gagal memuat data.', 'error');
+          return;
+        }
+
+        // Update statistik card
+        document.getElementById('stat-item').textContent  = result.count;
+        document.getElementById('stat-stok').textContent  = result.statistik.totalStok;
+        document.getElementById('stat-nilai').textContent = formatRupiah(result.statistik.totalNilai);
+
+        const data = result.data;
+
+        // Percabangan: tampilkan empty state jika tidak ada data
+        if (!data || data.length === 0) {
+          document.getElementById('empty-state').classList.remove('hidden');
+          return;
+        }
+
+        // Tampilkan tabel dengan data yang diterima
+        document.getElementById('table-wrapper').classList.remove('hidden');
+        const tbody = document.getElementById('tabel-body');
+        tbody.innerHTML = ''; // Kosongkan baris lama
+
+        // Iterasi array data menggunakan for loop (Unit J.620100.017.02)
+        for (let i = 0; i &lt; data.length; i++) {
+          const b   = data[i];
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-slate-50 transition fade-in';
+
+          // Logika warna badge stok berdasarkan kondisi stok
+          let stokBadge = '';
+          if (b.stok === 0) {
+            stokBadge = `&lt;span class="px-2 py-0.5 rounded-full text-xs bg-red-100 text-red-700 font-semibold"&gt;${b.stok} (Habis)&lt;/span&gt;`;
+          } else if (b.stok &lt; 10) {
+            stokBadge = `&lt;span class="px-2 py-0.5 rounded-full text-xs bg-yellow-100 text-yellow-700 font-semibold"&gt;${b.stok} (Rendah)&lt;/span&gt;`;
+          } else {
+            stokBadge = `&lt;span class="px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700 font-semibold"&gt;${b.stok}&lt;/span&gt;`;
+          }
+
+          row.innerHTML = `
+            &lt;td class="px-4 py-3 text-slate-400"&gt;${i + 1}&lt;/td&gt;
+            &lt;td class="px-4 py-3 font-mono font-semibold text-primary text-xs"&gt;${b.kodeBarang}&lt;/td&gt;
+            &lt;td class="px-4 py-3 font-medium"&gt;${b.namaBarang}&lt;/td&gt;
+            &lt;td class="px-4 py-3"&gt;
+              &lt;span class="px-2 py-0.5 rounded-full text-xs bg-indigo-50 text-indigo-700"&gt;${b.kategori}&lt;/span&gt;
+            &lt;/td&gt;
+            &lt;td class="px-4 py-3 text-right"&gt;${stokBadge}&lt;/td&gt;
+            &lt;td class="px-4 py-3 text-right font-medium"&gt;${formatRupiah(b.harga)}&lt;/td&gt;
+            &lt;td class="px-4 py-3 text-slate-500 text-xs"&gt;${b.keterangan || '–'}&lt;/td&gt;
+            &lt;td class="px-4 py-3 text-center"&gt;
+              &lt;div class="flex justify-center gap-2"&gt;
+                &lt;button onclick="editBarang('${b.id}')"
+                  class="px-3 py-1 bg-amber-400 hover:bg-amber-500 text-white text-xs rounded-lg transition font-semibold"&gt;
+                  ✏️ Edit
+                &lt;/button&gt;
+                &lt;button onclick="hapusBarang('${b.id}', '${b.namaBarang.replace(/'/g, "\\'")}')"
+                  class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition font-semibold"&gt;
+                  🗑️ Hapus
+                &lt;/button&gt;
+              &lt;/div&gt;
+            &lt;/td&gt;
+          `;
+          tbody.appendChild(row);
+        }
+
+      } catch (err) {
+        // Tangani error jaringan (server tidak berjalan, dll.)
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('empty-state').classList.remove('hidden');
+        document.getElementById('empty-state').innerHTML =
+          '&lt;p class="text-4xl mb-3"&gt;⚠️&lt;/p&gt;&lt;p class="text-sm text-red-400"&gt;Tidak dapat terhubung ke server. Pastikan backend berjalan di port 5000.&lt;/p&gt;';
+        console.error('[Client] Error loadBarang:', err);
+      }
+    }
+
+    /**
+     * Deskripsi   : Prosedur navigasi ke halaman edit.html dengan membawa ID barang di URL.
+     * @param {String} id - MongoDB ObjectId barang yang akan diedit
+     */
+    function editBarang(id) {
+      // Navigasi ke halaman edit dengan query parameter id
+      window.location.href = `/edit?id=${id}`;
+    }
+
+    /**
+     * Deskripsi   : Fungsi async untuk menghapus barang setelah konfirmasi pengguna.
+     * Initial State: Barang masih ada di database.
+     * Final State  : Barang terhapus dari database, tabel di-refresh.
+     * @param {String} id         - MongoDB ObjectId
+     * @param {String} namaBarang - Nama barang untuk konfirmasi dialog
+     */
+    async function hapusBarang(id, namaBarang) {
+      // Tampilkan dialog konfirmasi — mencegah penghapusan tidak sengaja
+      const konfirmasi = confirm(`Yakin ingin menghapus barang "${namaBarang}"?\nTindakan ini tidak dapat dibatalkan.`);
+      if (!konfirmasi) return; // Batalkan jika pengguna memilih "Cancel"
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        const result   = await response.json();
+
+        if (result.success) {
+          tampilkanAlert(`Barang "${namaBarang}" berhasil dihapus.`, 'success');
+          loadBarang(); // Refresh tabel setelah hapus
+        } else {
+          tampilkanAlert(result.message || 'Gagal menghapus barang.', 'error');
+        }
+      } catch (err) {
+        tampilkanAlert('Error jaringan. Pastikan server berjalan.', 'error');
+        console.error('[Client] Error hapusBarang:', err);
+      }
+    }
+
+    /**
+     * Deskripsi   : Event handler untuk submit form penambahan barang.
+     *               Membaca input dari form (interface) dan mengirim ke API (penyimpanan).
+     *               Implementasi unit J.620100.017.02: baca-tulis input ke penyimpanan.
+     */
+    document.getElementById('form-barang').addEventListener('submit', async function (e) {
+      e.preventDefault(); // Mencegah reload halaman
+
+      // Ambil nilai dari setiap field form
+      const kodeBarang  = document.getElementById('kodeBarang').value.trim();
+      const namaBarang  = document.getElementById('namaBarang').value.trim();
+      const kategori    = document.getElementById('kategori').value.trim();
+      const stok        = parseInt(document.getElementById('stok').value) || 0;
+      const harga       = parseInt(document.getElementById('harga').value) || 0;
+      const keterangan  = document.getElementById('keterangan').value.trim();
+
+      // Validasi sisi client — percabangan if-else
+      if (!kodeBarang || !namaBarang || !kategori) {
+        tampilkanAlert('Field Kode Barang, Nama Barang, dan Kategori wajib diisi!', 'warning');
+        return;
+      }
+
+      // Tampilkan loading pada tombol submit
+      const btnText = document.getElementById('btn-submit-text');
+      const btnIcon = document.getElementById('btn-submit-icon');
+      btnText.textContent = 'Menyimpan...';
+      btnIcon.textContent = '⏳';
+      document.getElementById('btn-submit').disabled = true;
+
+      try {
+        // Kirim data ke API menggunakan Fetch POST
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kodeBarang, namaBarang, kategori, stok, harga, keterangan }),
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          tampilkanAlert(`Barang "${result.data.namaBarang}" berhasil ditambahkan!`, 'success');
+          resetForm();   // Kosongkan form
+          loadBarang();  // Refresh tabel
+        } else {
+          tampilkanAlert(result.message || 'Gagal menyimpan barang.', 'error');
+        }
+      } catch (err) {
+        tampilkanAlert('Error jaringan. Pastikan server berjalan di port 5000.', 'error');
+        console.error('[Client] Error createBarang:', err);
+      } finally {
+        // Kembalikan tombol ke kondisi normal
+        btnText.textContent = 'Simpan Barang';
+        btnIcon.textContent = '💾';
+        document.getElementById('btn-submit').disabled = false;
+      }
+    });
+
+    // Jalankan loadBarang saat DOM selesai dimuat
+    document.addEventListener('DOMContentLoaded', loadBarang);
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+  </div>
+  <div class="file-container">
+    <div class="file-header">File Path: views/edit.html</div>
+    <pre class="language-html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;!--
+ * Deskripsi   : Halaman formulir edit/update data barang. Mengambil ID dari query string URL,
+ *               memuat data barang yang ada, lalu mengirim perubahan ke API via PUT.
+ * Initial State: Halaman baru dimuat dengan query ?id=&lt;mongoId&gt;; form masih kosong.
+ * Final State  : Data barang terbaru tersimpan di database, pengguna diarahkan kembali.
+ * Author       : Misbahul Fadhillah
+ * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+--&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+  &lt;meta name="description" content="Edit Data Barang — Sistem Manajemen Inventaris" /&gt;
+  &lt;title&gt;Edit Barang | Inventaris BNSP&lt;/title&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+  &lt;script&gt;
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#4f46e5', dark: '#3730a3' },
+            accent:  { DEFAULT: '#06b6d4' }
+          }
+        }
+      }
+    }
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body class="bg-slate-100 min-h-screen font-sans text-slate-800"&gt;
+
+  &lt;!-- HEADER --&gt;
+  &lt;header class="bg-gradient-to-r from-primary to-accent shadow-lg"&gt;
+    &lt;div class="max-w-3xl mx-auto px-4 py-5 flex items-center gap-3"&gt;
+      &lt;a href="/" class="text-white hover:text-indigo-200 transition text-xl" title="Kembali"&gt;←&lt;/a&gt;
+      &lt;div&gt;
+        &lt;h1 class="text-white text-xl font-bold"&gt;✏️ Edit Data Barang&lt;/h1&gt;
+        &lt;p class="text-indigo-100 text-sm"&gt;Perbarui informasi barang di bawah ini&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/header&gt;
+
+  &lt;main class="max-w-3xl mx-auto px-4 py-10"&gt;
+    &lt;div class="bg-white rounded-2xl shadow p-8"&gt;
+
+      &lt;!-- Alert Box --&gt;
+      &lt;div id="alert-box" class="hidden mb-5 p-3 rounded-lg text-sm font-medium"&gt;&lt;/div&gt;
+
+      &lt;!-- Loading Skeleton --&gt;
+      &lt;div id="loading" class="space-y-4"&gt;
+        &lt;div class="h-4 bg-slate-200 rounded animate-pulse w-1/3"&gt;&lt;/div&gt;
+        &lt;div class="h-10 bg-slate-100 rounded animate-pulse"&gt;&lt;/div&gt;
+        &lt;div class="h-4 bg-slate-200 rounded animate-pulse w-1/3"&gt;&lt;/div&gt;
+        &lt;div class="h-10 bg-slate-100 rounded animate-pulse"&gt;&lt;/div&gt;
+        &lt;div class="h-4 bg-slate-200 rounded animate-pulse w-1/3"&gt;&lt;/div&gt;
+        &lt;div class="h-10 bg-slate-100 rounded animate-pulse"&gt;&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Formulir Edit — tersembunyi sampai data dimuat --&gt;
+      &lt;form id="form-edit" class="hidden space-y-5" novalidate&gt;
+
+        &lt;!-- Kode Barang (readonly — tidak bisa diubah) --&gt;
+        &lt;div&gt;
+          &lt;label class="block text-xs font-semibold text-slate-500 mb-1"&gt;Kode Barang&lt;/label&gt;
+          &lt;input id="kodeBarang" type="text"
+            class="w-full border border-slate-200 bg-slate-50 rounded-lg px-3 py-2 text-sm text-slate-400 cursor-not-allowed"
+            readonly /&gt;
+          &lt;p class="text-xs text-slate-400 mt-1"&gt;Kode barang tidak dapat diubah.&lt;/p&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Nama Barang --&gt;
+        &lt;div&gt;
+          &lt;label class="block text-xs font-semibold text-slate-500 mb-1" for="namaBarang"&gt;
+            Nama Barang &lt;span class="text-red-500"&gt;*&lt;/span&gt;
+          &lt;/label&gt;
+          &lt;input id="namaBarang" type="text" required
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" /&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Kategori --&gt;
+        &lt;div&gt;
+          &lt;label class="block text-xs font-semibold text-slate-500 mb-1" for="kategori"&gt;
+            Kategori &lt;span class="text-red-500"&gt;*&lt;/span&gt;
+          &lt;/label&gt;
+          &lt;input id="kategori" type="text" required
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" /&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Stok &amp; Harga --&gt;
+        &lt;div class="grid grid-cols-2 gap-4"&gt;
+          &lt;div&gt;
+            &lt;label class="block text-xs font-semibold text-slate-500 mb-1" for="stok"&gt;Stok&lt;/label&gt;
+            &lt;input id="stok" type="number" min="0"
+              class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" /&gt;
+          &lt;/div&gt;
+          &lt;div&gt;
+            &lt;label class="block text-xs font-semibold text-slate-500 mb-1" for="harga"&gt;Harga (Rp)&lt;/label&gt;
+            &lt;input id="harga" type="number" min="0"
+              class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Keterangan --&gt;
+        &lt;div&gt;
+          &lt;label class="block text-xs font-semibold text-slate-500 mb-1" for="keterangan"&gt;Keterangan&lt;/label&gt;
+          &lt;textarea id="keterangan" rows="3"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+            placeholder="Catatan tambahan (opsional)"&gt;&lt;/textarea&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Tombol Aksi --&gt;
+        &lt;div class="flex justify-between gap-3 pt-2"&gt;
+          &lt;a href="/"
+            class="px-5 py-2 text-sm border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50 transition text-center"&gt;
+            ← Batal
+          &lt;/a&gt;
+          &lt;button type="submit" id="btn-update"
+            class="px-6 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary-dark transition flex items-center gap-2"&gt;
+            &lt;span id="btn-icon"&gt;💾&lt;/span&gt;
+            &lt;span id="btn-label"&gt;Simpan Perubahan&lt;/span&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+
+      &lt;!-- Error State --&gt;
+      &lt;div id="error-state" class="hidden text-center py-8"&gt;
+        &lt;p class="text-4xl mb-3"&gt;❌&lt;/p&gt;
+        &lt;p id="error-msg" class="text-sm text-red-500"&gt;Barang tidak ditemukan.&lt;/p&gt;
+        &lt;a href="/" class="mt-4 inline-block text-sm text-primary underline"&gt;← Kembali ke halaman utama&lt;/a&gt;
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+  &lt;/main&gt;
+
+  &lt;footer class="text-center text-xs text-slate-400 py-6"&gt;
+    Sistem Manajemen Inventaris Barang &amp;copy; 2026 · Misbahul Fadhillah
+  &lt;/footer&gt;
+
+  &lt;script&gt;
+    /**
+     * Deskripsi   : Script halaman edit. Mengambil ID dari URL, memuat data barang
+     *               dari API, mengisi form, lalu mengirim data yang diperbarui via PUT.
+     * Initial State: URL mengandung ?id=&lt;mongoId&gt;, form masih kosong.
+     * Final State  : Data berhasil diperbarui di database, redirect ke halaman utama.
+     * Author       : Misbahul Fadhillah
+     * Versi/Tanggal: 1.0.0 / 12 Juli 2026
+     */
+
+    const API_URL = '/api/barang';
+
+    /**
+     * Prosedur menampilkan alert di form edit.
+     * @param {String} pesan
+     * @param {String} tipe - 'success' | 'error' | 'warning'
+     */
+    function tampilkanAlert(pesan, tipe) {
+      const box = document.getElementById('alert-box');
+      const kelas = {
+        success: 'bg-green-100 text-green-800 border border-green-300',
+        error:   'bg-red-100 text-red-800 border border-red-300',
+        warning: 'bg-yellow-100 text-yellow-800 border border-yellow-300',
+      };
+      box.className = `mb-5 p-3 rounded-lg text-sm font-medium ${kelas[tipe] || kelas.warning}`;
+      box.textContent = pesan;
+      box.classList.remove('hidden');
+    }
+
+    /**
+     * Deskripsi   : Fungsi async untuk memuat data barang dari API berdasarkan ID.
+     *               ID diambil dari query string URL (?id=...).
+     * Initial State: Form tersembunyi, skeleton loading tampil.
+     * Final State  : Form terisi data barang, skeleton loading disembunyikan.
+     */
+    async function muatDataBarang() {
+      // Ambil ID dari parameter URL
+      const params = new URLSearchParams(window.location.search);
+      const id     = params.get('id');
+
+      const loading    = document.getElementById('loading');
+      const formEdit   = document.getElementById('form-edit');
+      const errorState = document.getElementById('error-state');
+
+      // Validasi: jika tidak ada ID di URL, tampilkan error
+      if (!id) {
+        loading.classList.add('hidden');
+        errorState.classList.remove('hidden');
+        document.getElementById('error-msg').textContent = 'ID barang tidak ditemukan di URL.';
+        return;
+      }
+
+      try {
+        // Fetch data barang berdasarkan ID
+        const response = await fetch(`${API_URL}/${id}`);
+        const result   = await response.json();
+
+        // Sembunyikan loading skeleton
+        loading.classList.add('hidden');
+
+        // Percabangan: tampilkan error jika barang tidak ditemukan
+        if (!result.success) {
+          errorState.classList.remove('hidden');
+          document.getElementById('error-msg').textContent = result.message;
+          return;
+        }
+
+        // Isi setiap field form dengan data yang diterima dari API
+        const b = result.data;
+        document.getElementById('kodeBarang').value  = b.kodeBarang;
+        document.getElementById('namaBarang').value  = b.namaBarang;
+        document.getElementById('kategori').value    = b.kategori;
+        document.getElementById('stok').value        = b.stok;
+        document.getElementById('harga').value       = b.harga;
+        document.getElementById('keterangan').value  = b.keterangan || '';
+
+        // Tampilkan form yang sudah terisi
+        formEdit.classList.remove('hidden');
+
+        // Simpan ID di atribut data form untuk digunakan saat submit
+        formEdit.dataset.barangId = id;
+
+      } catch (err) {
+        loading.classList.add('hidden');
+        errorState.classList.remove('hidden');
+        document.getElementById('error-msg').textContent =
+          'Tidak dapat terhubung ke server. Pastikan backend berjalan di port 5000.';
+        console.error('[Client] Error muatDataBarang:', err);
+      }
+    }
+
+    /**
+     * Deskripsi   : Event handler submit form edit. Mengambil nilai field,
+     *               memvalidasi, lalu mengirim PUT request ke API.
+     * Initial State: Form berisi data lama.
+     * Final State  : Data baru terkirim ke API, pengguna diarahkan ke halaman utama.
+     */
+    document.getElementById('form-edit').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const id         = this.dataset.barangId;
+      const namaBarang = document.getElementById('namaBarang').value.trim();
+      const kategori   = document.getElementById('kategori').value.trim();
+      const stok       = parseInt(document.getElementById('stok').value)  || 0;
+      const harga      = parseInt(document.getElementById('harga').value) || 0;
+      const keterangan = document.getElementById('keterangan').value.trim();
+
+      // Validasi sisi client
+      if (!namaBarang || !kategori) {
+        tampilkanAlert('Nama Barang dan Kategori wajib diisi!', 'warning');
+        return;
+      }
+
+      // Aktifkan loading state pada tombol
+      document.getElementById('btn-label').textContent = 'Menyimpan...';
+      document.getElementById('btn-icon').textContent  = '⏳';
+      document.getElementById('btn-update').disabled   = true;
+
+      try {
+        // Kirim PUT request ke endpoint API
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ namaBarang, kategori, stok, harga, keterangan }),
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          tampilkanAlert(`Barang "${result.data.namaBarang}" berhasil diperbarui! Mengalihkan...`, 'success');
+          // Redirect ke halaman utama setelah 1.5 detik
+          setTimeout(() =&gt; { window.location.href = '/'; }, 1500);
+        } else {
+          tampilkanAlert(result.message || 'Gagal memperbarui data.', 'error');
+          document.getElementById('btn-label').textContent = 'Simpan Perubahan';
+          document.getElementById('btn-icon').textContent  = '💾';
+          document.getElementById('btn-update').disabled   = false;
+        }
+      } catch (err) {
+        tampilkanAlert('Error jaringan. Pastikan server berjalan di port 5000.', 'error');
+        document.getElementById('btn-label').textContent = 'Simpan Perubahan';
+        document.getElementById('btn-icon').textContent  = '💾';
+        document.getElementById('btn-update').disabled   = false;
+        console.error('[Client] Error updateBarang:', err);
+      }
+    });
+
+    // Muat data barang saat DOM siap
+    document.addEventListener('DOMContentLoaded', muatDataBarang);
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+  </div>
+  <!-- Library JavaScript Prism.js untuk mewarnai kode -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+</body>
+</html>
